@@ -2,12 +2,8 @@ package auth_test
 
 import (
 	"forum/auth"
-	"forum/config"
 	"forum/db/gorm"
-	"forum/validator"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/labstack/gommon/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"net/http"
@@ -16,24 +12,6 @@ import (
 )
 
 var _ = Describe("Auth Handlers", func() {
-	config.Init("../config")
-
-	gorm.InitDB(
-		config.Viper.GetString("database.user"),
-		config.Viper.GetString("database.password"),
-		config.Viper.GetString("database.dbname"),
-	)
-
-	authHandler := auth.Handler{DB: gorm.DB}
-
-	e := echo.New()
-	validator := validator.InitValidator()
-	e.Validator = &validator
-	e.Logger.SetLevel(log.INFO)
-
-	// Middleware
-	e.Use(middleware.Logger())
-
 	Describe("Register", func() {
 		It("should register suceesfully", func() {
 			requestJSON := `{
@@ -45,7 +23,7 @@ var _ = Describe("Auth Handlers", func() {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := authHandler.Register(c)
+			err := handler.Register(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -71,7 +49,7 @@ var _ = Describe("Auth Handlers", func() {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := authHandler.Login(c)
+			err := handler.Login(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -83,5 +61,4 @@ var _ = Describe("Auth Handlers", func() {
 			Expect(recBody).To(ContainSubstring("userProfile"))
 		})
 	})
-
 })

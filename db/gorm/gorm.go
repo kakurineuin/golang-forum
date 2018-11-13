@@ -20,6 +20,5 @@ func InitDB(user string, password string, dbname string) {
 		panic(err)
 	}
 
-	fmt.Println("DB Connected")
 	DB.SingularTable(true)
 }
