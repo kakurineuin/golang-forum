@@ -1,0 +1,13 @@
+package post_test
+
+import (
+	"testing"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+func TestPost(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Post Suite")
+}
