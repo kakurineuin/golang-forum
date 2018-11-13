@@ -4,7 +4,7 @@ import (
 	"forum/auth"
 	"forum/config"
 	"forum/db/gorm"
-	"forum/validators"
+	"forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
@@ -27,7 +27,7 @@ var _ = Describe("Auth Handlers", func() {
 	authHandler := auth.Handler{DB: gorm.DB}
 
 	e := echo.New()
-	validator := validators.InitValidator()
+	validator := validator.InitValidator()
 	e.Validator = &validator
 	e.Logger.SetLevel(log.INFO)
 

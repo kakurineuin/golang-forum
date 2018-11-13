@@ -4,7 +4,7 @@ import (
 	"forum/auth"
 	"forum/config"
 	"forum/db/gorm"
-	"forum/validators"
+	"forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
@@ -20,7 +20,7 @@ func main() {
 	)
 
 	e := echo.New()
-	validator := validators.InitValidator()
+	validator := validator.InitValidator()
 	e.Validator = &validator
 	e.Logger.SetLevel(log.INFO)
 
