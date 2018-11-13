@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Posts from './pages/Posts';
 import * as authActions from './modules/auth';
 import * as messageActions from './modules/message';
 import './App.css';
@@ -57,8 +58,8 @@ class App extends Component {
       myConfigs = <Link to="/my/configs" className="navbar-item">{this.props.user.account}</Link>;
       buttons = (
         <div className="buttons">
-          <a className="button is-light"
-            onClick={event => this.logoutHandler(event)}>登出</a>
+          <button className="button is-light"
+            onClick={event => this.logoutHandler(event)}>登出</button>
         </div>
       );
     } else {
@@ -75,11 +76,11 @@ class App extends Component {
         <nav className="navbar" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
             <Link to="/" className="navbar-item">
-              <img src={logo} style={{ width: '100px', maxHeight: '52px' }} />
+              <img alt="logo" src={logo} style={{ width: '100px', maxHeight: '52px' }} />
             </Link>
           </div>
 
-          <div id="navbarBasicExample" className="navbar-menu">
+          <div id="navbarBasicExample" className="navbar-menu is-active">
             <div className="navbar-start">
               <Link to="/" className="navbar-item">Home</Link>
             </div>
@@ -99,6 +100,7 @@ class App extends Component {
             <Switch>
               <Route path="/register" component={Register} />
               <Route path="/login" component={Login} />
+              <Route path="/posts/:category" component={Posts} />
               <Route path="/" exact component={Home} />
               <Redirect to="/" />
             </Switch>
