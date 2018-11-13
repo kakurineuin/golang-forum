@@ -15,10 +15,3 @@ type Post struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
-
-// FindPostsRequest 查詢文章的請求。
-type FindPostsRequest struct {
-	Category string `json:"category"`
-	Offset   int    `json:"offset"`
-	Limit    int    `json:"limit"`
-}
