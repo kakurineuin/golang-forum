@@ -1,0 +1,25 @@
+package: forum
+import:
+- package: github.com/dgrijalva/jwt-go
+  version: ^3.2.0
+- package: github.com/jinzhu/gorm
+  version: ^1.9.1
+  subpackages:
+  - dialects/mysql
+- package: github.com/labstack/echo
+  version: ^3.3.7
+  subpackages:
+  - middleware
+- package: github.com/labstack/gommon
+  version: ^0.2.7
+  subpackages:
+  - log
+- package: github.com/spf13/viper
+  version: ^1.2.1
+- package: github.com/asaskevich/govalidator
+  version: ^9.0.0
+testImport:
+- package: github.com/onsi/ginkgo
+  version: ^1.6.0
+- package: github.com/onsi/gomega
+  version: ^1.4.2

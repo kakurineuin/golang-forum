@@ -1,0 +1,154 @@
+hash: 10657a465d3931a094b815c7a17424efbb23b48addb473cc6956aa9150893b95
+updated: 2018-11-06T00:11:39.6945868+08:00
+imports:
+- name: github.com/asaskevich/govalidator
+  version: ccb8e960c48f04d6935e72476ae4a51028f9e22f
+- name: github.com/dgrijalva/jwt-go
+  version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
+- name: github.com/fsnotify/fsnotify
+  version: ccc981bf80385c528a65fbfdd49bf2d8da22aa23
+- name: github.com/go-sql-driver/mysql
+  version: fd197cdcfae0c686792ef5399f223f5b66a30b6b
+- name: github.com/hashicorp/hcl
+  version: 65a6292f0157eff210d03ed1bf6c59b190b8b906
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/printer
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
+- name: github.com/jinzhu/gorm
+  version: 6ed508ec6a4ecb3531899a69cbc746ccf65a4166
+  subpackages:
+  - dialects/mysql
+- name: github.com/jinzhu/inflection
+  version: 04140366298a54a039076d798123ffa108fff46c
+- name: github.com/labstack/echo
+  version: ba1891b3dc1fc5548330e580c51157ea5eb6604f
+  subpackages:
+  - middleware
+- name: github.com/labstack/gommon
+  version: 2a618302b929cc20862dda3aa6f02f64dbe740dd
+  subpackages:
+  - bytes
+  - color
+  - log
+  - random
+- name: github.com/magiconair/properties
+  version: c2353362d570a7bfa228149c62842019201cfb71
+- name: github.com/mattn/go-colorable
+  version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
+- name: github.com/mattn/go-isatty
+  version: 3fb116b820352b7f0c281308a4d6250c22d94e27
+- name: github.com/mitchellh/mapstructure
+  version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
+- name: github.com/pelletier/go-toml
+  version: 81a861c69d25a841d0c4394f0e6f84bc8c5afae0
+- name: github.com/spf13/afero
+  version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
+  subpackages:
+  - mem
+- name: github.com/spf13/cast
+  version: 8c9545af88b134710ab1cd196795e7f2388358d7
+- name: github.com/spf13/jwalterweatherman
+  version: 94f6ae3ed3bceceafa716478c5fbf8d29ca601a1
+- name: github.com/spf13/pflag
+  version: 082b515c9490f4eccc758469c3152b77d139f868
+- name: github.com/spf13/viper
+  version: 2c12c60302a5a0e62ee102ca9bc996277c2f64f5
+- name: github.com/valyala/bytebufferpool
+  version: cdfbe9377474227bb42120c1e22fd4433e7f69bf
+- name: github.com/valyala/fasttemplate
+  version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
+- name: golang.org/x/crypto
+  version: 4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06
+  subpackages:
+  - acme
+  - acme/autocert
+- name: golang.org/x/sys
+  version: 9b800f95dbbc54abff0acf7ee32d88ba4e328c89
+  subpackages:
+  - unix
+- name: golang.org/x/text
+  version: 6f44c5a2ea40ee3593d98cdcc905cc1fdaa660e2
+  subpackages:
+  - encoding
+  - encoding/charmap
+  - encoding/htmlindex
+  - encoding/internal
+  - encoding/internal/identifier
+  - encoding/japanese
+  - encoding/korean
+  - encoding/simplifiedchinese
+  - encoding/traditionalchinese
+  - encoding/unicode
+  - internal/language
+  - internal/language/compact
+  - internal/tag
+  - internal/utf8internal
+  - language
+  - runes
+  - transform
+  - unicode/norm
+- name: google.golang.org/appengine
+  version: 4a4468ece617fc8205e99368fa2200e9d1fad421
+  subpackages:
+  - cloudsql
+- name: gopkg.in/yaml.v2
+  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
+testImports:
+- name: github.com/hpcloud/tail
+  version: a1dbeea552b7c8df4b542c66073e393de198a800
+  subpackages:
+  - ratelimiter
+  - util
+  - watch
+  - winfile
+- name: github.com/onsi/ginkgo
+  version: 3774a09d95489ccaa16032e0770d08ea77ba6184
+  subpackages:
+  - config
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/spec_iterator
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - reporters/stenographer/support/go-colorable
+  - reporters/stenographer/support/go-isatty
+  - types
+- name: github.com/onsi/gomega
+  version: 7615b9433f86a8bdf29709bf288bc4fd0636a369
+  subpackages:
+  - format
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
+- name: golang.org/x/net
+  version: c10e9556a7bc0e7c942242b606f0acf024ad5d6a
+  subpackages:
+  - html
+  - html/atom
+  - html/charset
+- name: gopkg.in/fsnotify/fsnotify.v1
+  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
+- name: gopkg.in/tomb.v1
+  version: c131134a1947e9afd9cecfe11f4c6dff0732ae58
