@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 
 class Home extends Component {
   render() {
-    console.log('Home props', this.props);
-
     return (
       <div className="columns">
         <div className="column is-9">

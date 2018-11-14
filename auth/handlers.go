@@ -10,6 +10,9 @@ import (
 	"github.com/labstack/echo"
 )
 
+// JWT secret key。
+const JwtSecret = "die_meere"
+
 // roleUser 表示角色是一般使用者。
 const roleUser string = "user"
 
@@ -134,7 +137,7 @@ func (h Handler) Restricted(c echo.Context) error {
 
 func createToken(userProfile UserProfile) (string, int64, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	exp := time.Now().Add(time.Minute * 10).Unix()
+	exp := time.Now().Add(time.Hour * 72).Unix()
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
@@ -143,7 +146,7 @@ func createToken(userProfile UserProfile) (string, int64, error) {
 	claims["exp"] = exp
 
 	// Generate encoded token.
-	tokenString, err := token.SignedString([]byte("golang_secret"))
+	tokenString, err := token.SignedString([]byte(JwtSecret))
 	return tokenString, exp, err
 }
 

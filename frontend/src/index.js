@@ -15,6 +15,12 @@ import 'bulma/css/bulma.css';
 axios.interceptors.request.use(config => {
     // Do something before request is sent
     store.dispatch(startLoad());
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (user) {
+        config.headers = {'Authorization': 'Bearer ' + user.token}
+    }
+
     return config;
 }, error => {
     // Do something with request error

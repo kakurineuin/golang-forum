@@ -4,6 +4,7 @@ import (
 	"forum/auth"
 	"forum/config"
 	"forum/db/gorm"
+	"forum/post"
 	"forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -42,9 +43,11 @@ func main() {
 	authGroup.POST("/login", authHandler.Login)
 	authGroup.POST("/logout", authHandler.Logout)
 
-	// Posts group
+	// Posts route
+	postHandler := post.Handler{DB: gorm.DB}
 	postsGroup := apiGroup.Group("/posts")
-	postsGroup.Use(middleware.JWT([]byte("secret")))
+	postsGroup.Use(middleware.JWT([]byte(auth.JwtSecret)))
+	postsGroup.POST("/:category", postHandler.CreatePost)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

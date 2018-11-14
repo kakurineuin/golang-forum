@@ -9,13 +9,13 @@ class Login extends Component {
     password: ''
   }
 
-  emailChangedHandler(event) {
+  emailChangeHandler(event) {
     this.setState({
       email: event.target.value
     });
   }
 
-  passwordChangedHandler(event) {
+  passwordChangeHandler(event) {
     this.setState({
       password: event.target.value
     });
@@ -40,7 +40,7 @@ class Login extends Component {
                 type="email"
                 placeholder="Email"
                 value={this.state.email}
-                onChange={event => this.emailChangedHandler(event)} />
+                onChange={event => this.emailChangeHandler(event)} />
               <span className="icon is-small is-left">
                 <i className="fas fa-envelope"></i>
               </span>
@@ -52,7 +52,7 @@ class Login extends Component {
                 type="password"
                 placeholder="Password"
                 value={this.state.password}
-                onChange={event => this.passwordChangedHandler(event)} />
+                onChange={event => this.passwordChangeHandler(event)} />
               <span className="icon is-small is-left">
                 <i className="fas fa-lock"></i>
               </span>

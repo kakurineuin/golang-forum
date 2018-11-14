@@ -10,19 +10,19 @@ class Register extends Component {
     password: ''
   }
 
-  accountChangedHandler(event) {
+  accountChangeHandler(event) {
     this.setState({
       account: event.target.value
     });
   }
 
-  emailChangedHandler(event) {
+  emailChangeHandler(event) {
     this.setState({
       email: event.target.value
     });
   }
 
-  passwordChangedHandler(event) {
+  passwordChangeHandler(event) {
     this.setState({
       password: event.target.value
     });
@@ -47,7 +47,7 @@ class Register extends Component {
                 type="text"
                 placeholder="帳號"
                 value={this.state.account}
-                onChange={event => this.accountChangedHandler(event)} />
+                onChange={event => this.accountChangeHandler(event)} />
               <span className="icon is-small is-left">
                 <i className="fas fas fa-user"></i>
               </span>
@@ -59,7 +59,7 @@ class Register extends Component {
                 type="email"
                 placeholder="Email"
                 value={this.state.email}
-                onChange={event => this.emailChangedHandler(event)} />
+                onChange={event => this.emailChangeHandler(event)} />
               <span className="icon is-small is-left">
                 <i className="fas fa-envelope"></i>
               </span>
@@ -71,7 +71,7 @@ class Register extends Component {
                 type="password"
                 placeholder="Password"
                 value={this.state.password}
-                onChange={event => this.passwordChangedHandler(event)} />
+                onChange={event => this.passwordChangeHandler(event)} />
               <span className="icon is-small is-left">
                 <i className="fas fa-lock"></i>
               </span>

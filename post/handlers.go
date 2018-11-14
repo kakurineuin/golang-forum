@@ -34,3 +34,29 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 		"posts": &posts,
 	})
 }
+
+// CreatePost 新增文章。
+func (h Handler) CreatePost(c echo.Context) (err error) {
+	post := new(Post)
+
+	if err = c.Bind(post); err != nil {
+		return
+	}
+
+	if err = c.Validate(post); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	category := c.Param("category")
+
+	if err = h.DB.Table("post_" + category).Create(post).Error; err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusCreated, map[string]interface{}{
+		"message": "新增文章成功。",
+		"post":    post,
+	})
+}
