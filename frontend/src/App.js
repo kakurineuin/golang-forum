@@ -22,6 +22,7 @@ class App extends Component {
 
   logoutHandler() {
     this.props.onLogout();
+    this.props.history.replace('/');
   }
 
   render() {
