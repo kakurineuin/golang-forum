@@ -63,20 +63,22 @@ func (h Handler) Register(c echo.Context) (err error) {
 	}
 
 	// 核對密碼。
-	hash, err := bcrypt.GenerateFromPassword([]byte(userProfile.Password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(*userProfile.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		return
 	}
 
-	userProfile.Password = string(hash)
-	userProfile.Role = roleUser
+	hashString := string(hash)
+	userProfile.Password = &hashString
+	role := roleUser
+	userProfile.Role = &role
 
 	if err = h.DB.Create(userProfile).Error; err != nil {
 		return
 	}
 
-	userProfile.Password = "" // 密碼不能傳到前端。
+	userProfile.Password = nil // 密碼不能傳到前端。
 	return returnTokenAndUserProfile(c, *userProfile, "註冊成功。")
 }
 
@@ -108,14 +110,14 @@ func (h Handler) Login(c echo.Context) (err error) {
 	}
 
 	// 核對密碼。
-	err = bcrypt.CompareHashAndPassword([]byte(userProfile.Password), []byte(loginRequest.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(*userProfile.Password), []byte(*loginRequest.Password))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"message": "密碼錯誤。",
 		})
 	}
 
-	userProfile.Password = "" // 密碼不能傳到前端。
+	userProfile.Password = nil // 密碼不能傳到前端。
 	return returnTokenAndUserProfile(c, userProfile, "登入成功。")
 }
 

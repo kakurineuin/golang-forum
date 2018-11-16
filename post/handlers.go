@@ -20,7 +20,7 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 
 	posts := []Post{}
 	err = h.DB.Table("post_" + category).
-		Where("is_topic = 1").
+		Where("reply_post_id is null").
 		Order("id desc").
 		Offset(offset).
 		Limit(limit).

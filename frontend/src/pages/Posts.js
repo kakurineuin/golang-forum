@@ -23,8 +23,7 @@ class Posts extends Component {
     axios.post(`/api/posts/${this.props.match.params.category}`, {
       userProfileID: this.props.user.id,
       title: this.state.title,
-      content: this.state.content,
-      isTopic: 1
+      content: this.state.content
     })
       .then(response => {
         console.log('create topic response', response);
