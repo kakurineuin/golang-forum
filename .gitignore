@@ -15,7 +15,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Golang
-vendor/
 build/
 
 # Binaries for programs and plugins
