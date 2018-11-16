@@ -46,8 +46,9 @@ func main() {
 	// Posts route
 	postHandler := post.Handler{DB: gorm.DB}
 	postsGroup := apiGroup.Group("/posts")
-	postsGroup.Use(middleware.JWT([]byte(auth.JwtSecret)))
-	postsGroup.POST("/:category", postHandler.CreatePost)
+	postsGroup.GET("/statistics", postHandler.FindPostsStatistics)
+	jwtMiddleware := middleware.JWT([]byte(auth.JwtSecret))
+	postsGroup.POST("/:category", postHandler.CreatePost, jwtMiddleware)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

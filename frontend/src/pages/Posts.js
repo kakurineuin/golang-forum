@@ -59,7 +59,7 @@ class Posts extends Component {
           <div className="field">
             <div className="control">
               <button className="button is-primary"
-                onClick={event => this.createTopicHandler()}>新增文章</button>
+                onClick={event => this.createTopicHandler()}>新增主題</button>
             </div>
           </div>
         </div>
@@ -71,10 +71,10 @@ class Posts extends Component {
         <table className="table is-bordered is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
-              <th>Topic</th>
-              <th>Created</th>
-              <th>Statistics</th>
-              <th>Last post</th>
+              <th>主題</th>
+              <th>新增時間</th>
+              <th>回覆數</th>
+              <th>最後新增</th>
             </tr>
           </thead>
           <tbody>

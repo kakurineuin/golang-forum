@@ -1,6 +1,7 @@
 package post_test
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"net/http"
@@ -8,6 +9,24 @@ import (
 )
 
 var _ = Describe("Post Handlers", func() {
+	Describe("Find posts statistics", func() {
+		It("should find suceesfully", func() {
+			req := httptest.NewRequest(http.MethodGet, "/posts/statistics", nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			err := handler.FindPostsStatistics(c)
+
+			Expect(err).To(BeNil())
+			Expect(rec.Code).To(Equal(http.StatusOK))
+
+			recBody := rec.Body.String()
+			fmt.Println("posts statistics", recBody)
+
+			Expect(recBody).To(ContainSubstring("golang"))
+			Expect(recBody).To(ContainSubstring("nodeJS"))
+		})
+	})
+
 	Describe("Find posts", func() {
 		It("should find suceesfully", func() {
 			req := httptest.NewRequest(http.MethodGet, "/?offset=0&limit=10", nil)

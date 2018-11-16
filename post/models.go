@@ -4,6 +4,15 @@ import (
 	"time"
 )
 
+// PostStatistic 首頁的文章統計資料。
+// 其中 TopicCount 和 ReplyCount 為了在查無資料時是 0，所以使用 int 而不是 *int。
+type PostStatistic struct {
+	TopicCount      int        `json:"topicCount"`
+	ReplyCount      int        `json:"replyCount"`
+	LastPostAccount *string    `json:"lastPostAccount"`
+	LastPostTime    *time.Time `json:"lastPostTime"`
+}
+
 // Post 文章。
 type Post struct {
 	ID            *int       `json:"id"`

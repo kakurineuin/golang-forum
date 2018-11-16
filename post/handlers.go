@@ -11,6 +11,42 @@ type Handler struct {
 	DB *gorm.DB
 }
 
+func (h Handler) FindPostsStatistics(c echo.Context) (err error) {
+
+	// 查詢 golang 文章統計資料。
+	var golangPostStatistic PostStatistic
+
+	h.DB.Raw(`select
+		(select count(*) from post_golang where reply_post_id is null) as topic_count,
+		(select count(*) from post_golang where reply_post_id is not null) as reply_count,
+		u.account as last_post_account,
+		p.created_at as last_post_time
+	from post_golang p 
+		inner join user_profile u 
+			on p.user_profile_id = u.id
+	order by p.id desc
+	limit 1`).Scan(&golangPostStatistic)
+
+	// 查詢 Node.js 文章統計資料。
+	var nodeJSPostStatistic PostStatistic
+
+	h.DB.Raw(`select
+		(select count(*) from post_nodejs where reply_post_id is null) as topic_count,
+		(select count(*) from post_nodejs where reply_post_id is not null) as reply_count,
+		u.account as last_post_account,
+		p.created_at as last_post_time
+	from post_nodejs p 
+		inner join user_profile u 
+			on p.user_profile_id = u.id
+	order by p.id desc
+	limit 1`).Scan(&nodeJSPostStatistic)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"golang": golangPostStatistic,
+		"nodeJS": nodeJSPostStatistic,
+	})
+}
+
 // FindPosts 查詢文章。
 func (h Handler) FindPosts(c echo.Context) (err error) {
 	category := c.Param("category")

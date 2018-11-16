@@ -1,18 +1,43 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import * as postActions from '../modules/post';
+import dateFns from 'date-fns';
 
 class Home extends Component {
+  componentDidMount() {
+    this.props.onFindPostsStatistics();
+  }
+
   render() {
+    const golang = this.props.postsStatistics.golang;
+    let golangLastPost = '';
+
+    if (golang.lastPostTime) {
+      golangLastPost = golang.lastPostAccount 
+        + ' 於 ' 
+        + dateFns.format(new Date(golang.lastPostTime), 'YYYY/MM/DD HH:mm:ss');
+    }
+
+    const nodeJS = this.props.postsStatistics.nodeJS;
+    let nodeJSLastPost = '';
+
+    if (nodeJS.lastPostTime) {
+      nodeJSLastPost = nodeJS.lastPostAccount 
+        + ' 於 ' 
+        + dateFns.format(new Date(nodeJS.lastPostTime), 'YYYY/MM/DD HH:mm:ss');
+    }
+
     return (
       <div className="columns">
         <div className="column is-9">
           <table className="table is-bordered is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
-                <th>Category</th>
-                <th>Topics</th>
-                <th>Posts</th>
-                <th>Last post</th>
+                <th>分類</th>
+                <th>主題數</th>
+                <th>回覆數</th>
+                <th>最後新增</th>
               </tr>
             </thead>
             <tbody>
@@ -22,9 +47,9 @@ class Home extends Component {
                     Golang
                   </Link>
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{golang.topicCount}</td>
+                <td>{golang.replyCount}</td>
+                <td>{golangLastPost}</td>
               </tr>
               <tr>
                 <td>
@@ -32,9 +57,9 @@ class Home extends Component {
                     Node.js
                   </Link>
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{nodeJS.topicCount}</td>
+                <td>{nodeJS.replyCount}</td>
+                <td>{nodeJSLastPost}</td>
               </tr>
             </tbody>
           </table>
@@ -53,4 +78,16 @@ class Home extends Component {
   }
 }
 
-export default Home;
+const mapStateToProps = state => {
+  return {
+    postsStatistics: state.post.postsStatistics
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onFindPostsStatistics: () => dispatch(postActions.findPostsStatistics())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
