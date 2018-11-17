@@ -83,8 +83,8 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 			on p.id = last_reply.reply_post_id
 	where p.reply_post_id is null
 	order by p.id desc
-	limit 0, 10`, table)
-	rows, err := h.DB.Raw(sql).Rows()
+	limit ?, ?`, table)
+	rows, err := h.DB.Raw(sql, offset, limit).Rows()
 	defer rows.Close()
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -99,8 +99,23 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 		findPostsResults = append(findPostsResults, findPostsResult)
 	}
 
+	// 查詢總筆數。
+	totalCount := 0
+	sql = fmt.Sprintf(`select
+		count(*)
+	from
+		%v p
+		inner join user_profile u 
+			on p.user_profile_id = u.id
+		left join view_post_golang_each_topic_last_reply last_reply 
+			on p.id = last_reply.reply_post_id
+	where p.reply_post_id is null`, table)
+	row := h.DB.Raw(sql).Row()
+	row.Scan(&totalCount)
+
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"posts": findPostsResults,
+		"posts":      findPostsResults,
+		"totalCount": totalCount,
 	})
 }
 

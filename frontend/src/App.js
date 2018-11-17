@@ -42,7 +42,7 @@ class App extends Component {
         }
 
         notifications.push(
-          <div className={classes.join(' ')}>
+          <div key={id} className={classes.join(' ')}>
             <button
               className="delete"
               onClick={event => this.deleteMessageHandler(id)}></button>

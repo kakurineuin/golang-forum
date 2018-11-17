@@ -1,29 +1,35 @@
 import React, { Component } from 'react';
 import PostEditor from '../components/PostEditor';
+import Pagination from '../components/Pagination';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import produce from "immer";
+import produce from 'immer';
 import dateFns from 'date-fns';
 
 class Posts extends Component {
   state = {
     topic: '',
     content: '',
-    offset: 0,
-    limit: 10,
-    posts: []
+    posts: [],
+    totalCount: 0,
+    paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
   };
 
-  componentDidMount() {
-    this.findPosts();
-  }
-
   topicChangeHandler(event) {
-    this.setState({ topic: event.target.value });
+    const value = event.target.value;
+    this.setState(
+      produce(draft => {
+        draft.topic = value;
+      })
+    );
   }
 
   contentChangeHandler(value) {
-    this.setState({ content: value });
+    this.setState(
+      produce(draft => {
+        draft.content = value
+      })
+    );
   }
 
   createTopicHandler() {
@@ -40,24 +46,24 @@ class Posts extends Component {
           produce(draft => {
             draft.topic = '';
             draft.content = '';
+            draft.paginationKey = Math.random();
           })
-          , () => {
-            this.findPosts();
-          });
+        );
       });
   }
 
-  findPosts() {
+  findPosts(offset, limit) {
     axios.get(`/api/posts/${this.props.match.params.category}`, {
       params: {
-        offset: this.state.offset,
-        limit: this.state.limit
+        offset,
+        limit
       }
     })
       .then(response => {
         this.setState(
           produce(draft => {
-            draft.posts = response.data.posts
+            draft.posts = response.data.posts;
+            draft.totalCount = response.data.totalCount;
           })
         );
       });
@@ -109,7 +115,7 @@ class Posts extends Component {
       }
 
       return (
-        <tr>
+        <tr key={post.id}>
           <td>{post.topic}</td>
           <td>{post.replyCount}</td>
           <td>
@@ -137,6 +143,12 @@ class Posts extends Component {
             {posts}
           </tbody>
         </table>
+        <Pagination
+          key={this.state.paginationKey}
+          totalCount={this.state.totalCount}
+          findData={(offset, limit) => this.findPosts(offset, limit)}>
+        </Pagination>
+        <br />
         {createTopic}
       </div>
     );

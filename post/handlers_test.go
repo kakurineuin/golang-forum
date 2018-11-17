@@ -40,8 +40,10 @@ var _ = Describe("Post Handlers", func() {
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
+			fmt.Println("posts", recBody)
 
 			Expect(recBody).To(ContainSubstring("posts"))
+			Expect(recBody).To(ContainSubstring("totalCount"))
 		})
 	})
 })
