@@ -1,31 +1,62 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import * as postActions from '../modules/post';
 import dateFns from 'date-fns';
+import axios from 'axios';
+import produce from "immer";
 
 class Home extends Component {
+  state = {
+    golang: {
+      totalCount: 0,
+      replyCount: 0,
+      lastPostAccount: null,
+      lastPostTime: null
+    },
+    nodeJS: {
+      totalCount: 0,
+      replyCount: 0,
+      lastPostAccount: null,
+      lastPostTime: null
+    }
+  };
+
   componentDidMount() {
-    this.props.onFindPostsStatistics();
+    axios.get('/api/posts/statistics')
+      .then(response => {
+        this.setState(
+          produce(draft => {
+            draft.golang = response.data.golang;
+            draft.nodeJS = response.data.nodeJS;
+          })
+        );
+      });
   }
 
   render() {
-    const golang = this.props.postsStatistics.golang;
-    let golangLastPost = '';
+    const golang = this.state.golang;
+    let golangLastPost = null;
 
     if (golang.lastPostTime) {
-      golangLastPost = golang.lastPostAccount 
-        + ' 於 ' 
-        + dateFns.format(new Date(golang.lastPostTime), 'YYYY/MM/DD HH:mm:ss');
+      golangLastPost = (
+        <div>
+          {dateFns.format(new Date(golang.lastPostTime), 'YYYY/MM/DD HH:mm:ss')}
+          <br />
+          {golang.lastPostAccount}
+        </div>
+      );
     }
 
-    const nodeJS = this.props.postsStatistics.nodeJS;
-    let nodeJSLastPost = '';
+    const nodeJS = this.state.nodeJS;
+    let nodeJSLastPost = null;
 
     if (nodeJS.lastPostTime) {
-      nodeJSLastPost = nodeJS.lastPostAccount 
-        + ' 於 ' 
-        + dateFns.format(new Date(nodeJS.lastPostTime), 'YYYY/MM/DD HH:mm:ss');
+      nodeJSLastPost = (
+        <div>
+          {dateFns.format(new Date(nodeJS.lastPostTime), 'YYYY/MM/DD HH:mm:ss')}
+          <br />
+          {nodeJS.lastPostAccount}
+        </div>
+      );
     }
 
     return (
@@ -37,7 +68,7 @@ class Home extends Component {
                 <th>分類</th>
                 <th>主題數</th>
                 <th>回覆數</th>
-                <th>最後新增</th>
+                <th>最新發文</th>
               </tr>
             </thead>
             <tbody>
@@ -78,16 +109,4 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    postsStatistics: state.post.postsStatistics
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    onFindPostsStatistics: () => dispatch(postActions.findPostsStatistics())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

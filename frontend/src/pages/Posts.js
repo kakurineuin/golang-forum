@@ -2,15 +2,24 @@ import React, { Component } from 'react';
 import PostEditor from '../components/PostEditor';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import produce from "immer";
+import dateFns from 'date-fns';
 
 class Posts extends Component {
   state = {
-    title: '',
-    content: ''
+    topic: '',
+    content: '',
+    offset: 0,
+    limit: 10,
+    posts: []
   };
 
-  titleChangeHandler(event) {
-    this.setState({ title: event.target.value });
+  componentDidMount() {
+    this.findPosts();
+  }
+
+  topicChangeHandler(event) {
+    this.setState({ topic: event.target.value });
   }
 
   contentChangeHandler(value) {
@@ -22,15 +31,35 @@ class Posts extends Component {
     console.log('state', this.state);
     axios.post(`/api/posts/${this.props.match.params.category}`, {
       userProfileID: this.props.user.id,
-      title: this.state.title,
+      topic: this.state.topic,
       content: this.state.content
     })
       .then(response => {
         console.log('create topic response', response);
-        this.setState({
-          title: '',
-          content: ''
-        });
+        this.setState(
+          produce(draft => {
+            draft.topic = '';
+            draft.content = '';
+          })
+          , () => {
+            this.findPosts();
+          });
+      });
+  }
+
+  findPosts() {
+    axios.get(`/api/posts/${this.props.match.params.category}`, {
+      params: {
+        offset: this.state.offset,
+        limit: this.state.limit
+      }
+    })
+      .then(response => {
+        this.setState(
+          produce(draft => {
+            draft.posts = response.data.posts
+          })
+        );
       });
   }
 
@@ -41,13 +70,13 @@ class Posts extends Component {
       createTopic = (
         <div className="box">
           <div className="field">
-            <label className="label">標題</label>
+            <label className="label">主題</label>
             <div className="control">
               <input type="text"
                 className="input"
-                placeholder="請輸入標題"
-                value={this.state.title}
-                onChange={event => this.titleChangeHandler(event)} />
+                placeholder="請輸入主題"
+                value={this.state.topic}
+                onChange={event => this.topicChangeHandler(event)} />
             </div>
           </div>
           <div className="field">
@@ -66,24 +95,46 @@ class Posts extends Component {
       );
     }
 
+    const posts = this.state.posts.map((post, index) => {
+      let lastReply = (<td></td>);
+
+      if (post.lastReplyAccount) {
+        lastReply = (
+          <td>
+            {dateFns.format(new Date(post.lastReplyCreatedAt), 'YYYY/MM/DD HH:mm:ss')}
+            <br />
+            {post.lastReplyAccount}
+          </td>
+        );
+      }
+
+      return (
+        <tr>
+          <td>{post.topic}</td>
+          <td>{post.replyCount}</td>
+          <td>
+            {dateFns.format(new Date(post.createdAt), 'YYYY/MM/DD HH:mm:ss')}
+            <br />
+            {post.account}
+          </td>
+          {lastReply}
+        </tr>
+      )
+    });
+
     return (
       <div className="container">
         <table className="table is-bordered is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
               <th>主題</th>
-              <th>新增時間</th>
               <th>回覆數</th>
-              <th>最後新增</th>
+              <th>作者</th>
+              <th>最新發文</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
+            {posts}
           </tbody>
         </table>
         {createTopic}

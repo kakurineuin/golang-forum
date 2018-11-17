@@ -1,6 +1,8 @@
 package post
 
 import (
+	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 	"net/http"
@@ -54,20 +56,51 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 	limit := c.QueryParam("limit")
 	c.Logger().Infof("category: %v, offset: %v, limit: %v", category, offset, limit)
 
-	posts := []Post{}
-	err = h.DB.Table("post_" + category).
-		Where("reply_post_id is null").
-		Order("id desc").
-		Offset(offset).
-		Limit(limit).
-		Find(&posts).Error
+	table := ""
+
+	switch category {
+	case "golang":
+		table = "post_golang"
+	case "nodejs":
+		table = "post_nodejs"
+	default:
+		return errors.New("category is error")
+	}
+
+	sql := fmt.Sprintf(`select
+		p.id,
+		p.topic,
+		IFNULL(last_reply.reply_count, 0) as reply_count,
+		p.created_at,
+		u.account,
+		last_reply.created_at as last_reply_created_at,
+		last_reply.account as last_reply_account
+	from
+		%v p
+		inner join user_profile u 
+			on p.user_profile_id = u.id
+		left join view_post_golang_each_topic_last_reply last_reply 
+			on p.id = last_reply.reply_post_id
+	where p.reply_post_id is null
+	order by p.id desc
+	limit 0, 10`, table)
+	rows, err := h.DB.Raw(sql).Rows()
+	defer rows.Close()
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return
 	}
 
+	findPostsResults := make([]FindPostsResult, 0)
+
+	for rows.Next() {
+		var findPostsResult FindPostsResult
+		h.DB.ScanRows(rows, &findPostsResult)
+		findPostsResults = append(findPostsResults, findPostsResult)
+	}
+
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"posts": &posts,
+		"posts": findPostsResults,
 	})
 }
 
@@ -85,9 +118,7 @@ func (h Handler) CreatePost(c echo.Context) (err error) {
 		})
 	}
 
-	category := c.Param("category")
-
-	if err = h.DB.Table("post_" + category).Create(post).Error; err != nil {
+	if err = h.DB.Table("post_" + c.Param("category")).Create(post).Error; err != nil {
 		return
 	}
 
