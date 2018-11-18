@@ -160,7 +160,7 @@ class Posts extends Component {
               <th>主題</th>
               <th>回覆數</th>
               <th>作者</th>
-              <th>最新發文</th>
+              <th>最新回覆</th>
             </tr>
           </thead>
           <tbody>{posts}</tbody>

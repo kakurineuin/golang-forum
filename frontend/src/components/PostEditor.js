@@ -16,10 +16,22 @@ class PostEditor extends Component {
         { indent: "-1" },
         { indent: "+1" }
       ],
-      ["link"],
       ["clean"]
     ]
   };
+
+  formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "code-block",
+    "list",
+    "bullet",
+    "indent"
+  ];
 
   changeHandler(value) {
     this.props.changed(value);
@@ -29,9 +41,11 @@ class PostEditor extends Component {
     return (
       <div style={{ marginBottom: "10px" }}>
         <ReactQuill
+          {...this.props}
           theme="snow"
           value={this.props.value}
           modules={this.modules}
+          formats={this.formats}
           onChange={value => this.changeHandler(value)}
         />
       </div>

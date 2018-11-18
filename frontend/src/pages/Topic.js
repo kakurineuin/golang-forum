@@ -11,7 +11,6 @@ import dateFns from "date-fns";
 */
 class Topic extends Component {
   state = {
-    topicID: null, // 主題文章 ID。
     posts: [], // 全部文章。
     totalCount: 0, // 文章總數。
     content: "", // 回覆內文。
@@ -34,7 +33,7 @@ class Topic extends Component {
         userProfileID: this.props.user.id,
         topic: this.state.posts[0].topic,
         content: this.state.content,
-        replyPostID: this.state.posts[0].id
+        replyPostID: parseInt(this.props.match.params.id, 10)
       })
       .then(response => {
         console.log("create reply response", response);
@@ -97,16 +96,61 @@ class Topic extends Component {
       );
     }
 
+    const id = parseInt(this.props.match.params.id, 10);
     const posts = this.state.posts.map((post, index) => {
-      // TODO: 列出討論串文章。
+      let content = null;
+
+      // 若是主題文章，顯示主題。
+      content = (
+        <td>
+          {post.id === id ? (
+            <div>
+              <h1 className="title">{post.topic}</h1>
+              <hr />
+            </div>
+          ) : null}
+          <div className="ql-snow">
+            <div
+              className="ql-editor"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          </div>
+        </td>
+      );
+
+      // 新增時間。
+      const createdAt = dateFns.format(
+        new Date(post.createdAt),
+        "YYYY/MM/DD HH:mm:ss"
+      );
+
+      // 修改時間。
+      const updatedAt = dateFns.format(
+        new Date(post.updatedAt),
+        "YYYY/MM/DD HH:mm:ss"
+      );
+
+      return (
+        <tr key={post.id}>
+          <td>
+            <h6 className="title is-6">{post.account}</h6>
+            <div className="is-size-7">{createdAt + " 新增"}</div>
+            {updatedAt !== createdAt ? (
+              <div className="is-size-7">{updatedAt + " 修改"}</div>
+            ) : null}
+            <br />
+          </td>
+          {content}
+        </tr>
+      );
     });
 
     return (
       <div className="container">
-        <table className="table is-bordered is-striped is-hoverable is-fullwidth">
+        <table className="table is-bordered is-striped is-fullwidth">
           <thead>
             <tr>
-              <th>作者</th>
+              <th width="170px">作者</th>
               <th>文章</th>
             </tr>
           </thead>
