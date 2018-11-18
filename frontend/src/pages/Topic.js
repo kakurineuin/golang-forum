@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import PostEditor from "../components/PostEditor";
 import Pagination from "../components/Pagination";
 import { connect } from "react-redux";
@@ -8,25 +7,16 @@ import produce from "immer";
 import dateFns from "date-fns";
 
 /**
-  主題列表頁面。
+  討論串頁面。
 */
-class Posts extends Component {
+class Topic extends Component {
   state = {
-    topic: "",
-    content: "",
-    posts: [],
-    totalCount: 0,
+    topicID: null, // 主題文章 ID。
+    posts: [], // 全部文章。
+    totalCount: 0, // 文章總數。
+    content: "", // 回覆內文。
     paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
   };
-
-  topicChangeHandler(event) {
-    const value = event.target.value;
-    this.setState(
-      produce(draft => {
-        draft.topic = value;
-      })
-    );
-  }
 
   contentChangeHandler(value) {
     this.setState(
@@ -36,20 +26,20 @@ class Posts extends Component {
     );
   }
 
-  createTopicHandler() {
+  createReplyHandler() {
     console.log("props", this.props);
     console.log("state", this.state);
     axios
       .post(`/api/posts/${this.props.match.params.category}`, {
         userProfileID: this.props.user.id,
-        topic: this.state.topic,
-        content: this.state.content
+        topic: this.state.posts[0].topic,
+        content: this.state.content,
+        replyPostID: this.state.posts[0].id
       })
       .then(response => {
-        console.log("create topic response", response);
+        console.log("create reply response", response);
         this.setState(
           produce(draft => {
-            draft.topic = "";
             draft.content = "";
             draft.paginationKey = Math.random();
           })
@@ -57,15 +47,18 @@ class Posts extends Component {
       });
   }
 
-  findPosts(offset, limit) {
+  findPostsByTopicID(offset, limit) {
+    const category = this.props.match.params.category;
+    const id = this.props.match.params.id;
     axios
-      .get(`/api/posts/${this.props.match.params.category}`, {
+      .get(`/api/posts/${category}/topics/${id}`, {
         params: {
           offset,
           limit
         }
       })
       .then(response => {
+        console.log(response);
         this.setState(
           produce(draft => {
             draft.posts = response.data.posts;
@@ -76,25 +69,13 @@ class Posts extends Component {
   }
 
   render() {
-    let createTopic = null;
+    let createReply = null;
 
     if (this.props.user) {
-      createTopic = (
+      createReply = (
         <div className="box">
           <div className="field">
-            <label className="label">主題</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                placeholder="請輸入主題"
-                value={this.state.topic}
-                onChange={event => this.topicChangeHandler(event)}
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">內文</label>
+            <label className="label">回覆</label>
             <div className="control">
               <PostEditor
                 value={this.state.content}
@@ -106,9 +87,9 @@ class Posts extends Component {
             <div className="control">
               <button
                 className="button is-primary"
-                onClick={event => this.createTopicHandler()}
+                onClick={event => this.createReplyHandler()}
               >
-                新增主題
+                回覆
               </button>
             </div>
           </div>
@@ -117,39 +98,7 @@ class Posts extends Component {
     }
 
     const posts = this.state.posts.map((post, index) => {
-      let lastReply = <td />;
-
-      if (post.lastReplyAccount) {
-        lastReply = (
-          <td>
-            {dateFns.format(
-              new Date(post.lastReplyCreatedAt),
-              "YYYY/MM/DD HH:mm:ss"
-            )}
-            <br />
-            {post.lastReplyAccount}
-          </td>
-        );
-      }
-
-      const category = this.props.match.params.category;
-
-      return (
-        <tr key={post.id}>
-          <td>
-            <Link to={`/posts/${category}/topics/${post.id}`}>
-              {post.topic}
-            </Link>
-          </td>
-          <td>{post.replyCount}</td>
-          <td>
-            {dateFns.format(new Date(post.createdAt), "YYYY/MM/DD HH:mm:ss")}
-            <br />
-            {post.account}
-          </td>
-          {lastReply}
-        </tr>
-      );
+      // TODO: 列出討論串文章。
     });
 
     return (
@@ -157,10 +106,8 @@ class Posts extends Component {
         <table className="table is-bordered is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
-              <th>主題</th>
-              <th>回覆數</th>
               <th>作者</th>
-              <th>最新發文</th>
+              <th>文章</th>
             </tr>
           </thead>
           <tbody>{posts}</tbody>
@@ -168,10 +115,10 @@ class Posts extends Component {
         <Pagination
           key={this.state.paginationKey}
           totalCount={this.state.totalCount}
-          findData={(offset, limit) => this.findPosts(offset, limit)}
+          findData={(offset, limit) => this.findPostsByTopicID(offset, limit)}
         />
         <br />
-        {createTopic}
+        {createReply}
       </div>
     );
   }
@@ -186,4 +133,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   null
-)(Posts);
+)(Topic);

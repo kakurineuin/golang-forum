@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// JWT secret key。
+// JwtSecret JWT secret key。
 const JwtSecret = "die_meere"
 
 // roleUser 表示角色是一般使用者。
@@ -90,7 +90,7 @@ func (h Handler) Login(c echo.Context) (err error) {
 		return
 	}
 
-	if err := c.Validate(loginRequest); err != nil {
+	if err = c.Validate(loginRequest); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"message": err.Error(),
 		})
@@ -125,16 +125,6 @@ func (h Handler) Login(c echo.Context) (err error) {
 func (h Handler) Logout(c echo.Context) error {
 	// TODO: 待實做。
 	return nil
-}
-
-func (h Handler) Restricted(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	c.Logger().Info(user)
-	claims := user.Claims.(jwt.MapClaims)
-	c.Logger().Info(claims)
-	account := claims["account"].(string)
-	c.Logger().Info(account)
-	return c.String(http.StatusOK, "Welcome "+account+"!")
 }
 
 func createToken(userProfile UserProfile) (string, int64, error) {

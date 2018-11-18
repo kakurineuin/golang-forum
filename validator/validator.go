@@ -4,14 +4,17 @@ import (
 	valid "github.com/asaskevich/govalidator"
 )
 
-type customValidator struct {
+// CustomValidator 自訂驗證器。
+type CustomValidator struct {
 }
 
-func (cv *customValidator) Validate(i interface{}) error {
+// Validate 驗證 struct。
+func (cv *CustomValidator) Validate(i interface{}) error {
 	_, err := valid.ValidateStruct(i)
 	return err
 }
 
-func InitValidator() customValidator {
-	return customValidator{}
+// InitValidator 初始化驗證器。
+func InitValidator() CustomValidator {
+	return CustomValidator{}
 }

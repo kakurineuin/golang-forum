@@ -1,15 +1,23 @@
-import React, { Component } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import React, { Component } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
+/**
+  文章編輯器元件。
+*/
 class PostEditor extends Component {
   modules = {
     toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-      ['link'],
-      ['clean']
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote", "code-block"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" }
+      ],
+      ["link"],
+      ["clean"]
     ]
   };
 
@@ -19,11 +27,13 @@ class PostEditor extends Component {
 
   render() {
     return (
-      <div style={{marginBottom: '10px'}}>
-      <ReactQuill theme="snow"
-        value={this.props.value}
-        modules={this.modules}
-        onChange={value => this.changeHandler(value)} />
+      <div style={{ marginBottom: "10px" }}>
+        <ReactQuill
+          theme="snow"
+          value={this.props.value}
+          modules={this.modules}
+          onChange={value => this.changeHandler(value)}
+        />
       </div>
     );
   }

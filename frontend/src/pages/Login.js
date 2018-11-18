@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
-import { Redirect } from 'react-router'
-import { connect } from 'react-redux';
-import * as authActions from '../modules/auth'
+import React, { Component } from "react";
+import { Redirect } from "react-router";
+import { connect } from "react-redux";
+import * as authActions from "../modules/auth";
 
+/**
+  登入頁面。
+*/
 class Login extends Component {
   state = {
-    email: '',
-    password: ''
-  }
+    email: "",
+    password: ""
+  };
 
   emailChangeHandler(event) {
     this.setState({
@@ -31,44 +34,48 @@ class Login extends Component {
 
     return (
       <div className="columns">
-        <div className="column is-4">
-        </div>
+        <div className="column is-4" />
         <div className="column is-4">
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input"
+              <input
+                className="input"
                 type="email"
                 placeholder="Email"
                 value={this.state.email}
-                onChange={event => this.emailChangeHandler(event)} />
+                onChange={event => this.emailChangeHandler(event)}
+              />
               <span className="icon is-small is-left">
-                <i className="fas fa-envelope"></i>
+                <i className="fas fa-envelope" />
               </span>
             </p>
           </div>
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input"
+              <input
+                className="input"
                 type="password"
                 placeholder="Password"
                 value={this.state.password}
-                onChange={event => this.passwordChangeHandler(event)} />
+                onChange={event => this.passwordChangeHandler(event)}
+              />
               <span className="icon is-small is-left">
-                <i className="fas fa-lock"></i>
+                <i className="fas fa-lock" />
               </span>
             </p>
           </div>
           <div className="field">
             <p className="control">
-              <button className="button is-success"
-                onClick={event => this.loginHandler(event)}>
+              <button
+                className="button is-success"
+                onClick={event => this.loginHandler(event)}
+              >
                 登入
               </button>
             </p>
           </div>
         </div>
-        <div className="column is-4">
-        </div>
+        <div className="column is-4" />
       </div>
     );
   }
@@ -86,4 +93,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);

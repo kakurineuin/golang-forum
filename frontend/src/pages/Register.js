@@ -1,14 +1,17 @@
-import React, { Component } from 'react';
-import { Redirect } from 'react-router'
-import { connect } from 'react-redux';
-import * as authActions from '../modules/auth'
+import React, { Component } from "react";
+import { Redirect } from "react-router";
+import { connect } from "react-redux";
+import * as authActions from "../modules/auth";
 
+/**
+  註冊頁面。
+*/
 class Register extends Component {
   state = {
-    account: '',
-    email: '',
-    password: ''
-  }
+    account: "",
+    email: "",
+    password: ""
+  };
 
   accountChangeHandler(event) {
     this.setState({
@@ -30,7 +33,11 @@ class Register extends Component {
 
   registerHandler(event) {
     event.preventDefault();
-    this.props.onRegister(this.state.account, this.state.email, this.state.password);
+    this.props.onRegister(
+      this.state.account,
+      this.state.email,
+      this.state.password
+    );
   }
 
   render() {
@@ -38,56 +45,62 @@ class Register extends Component {
 
     return (
       <div className="columns">
-        <div className="column is-4">
-        </div>
+        <div className="column is-4" />
         <div className="column is-4">
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input"
+              <input
+                className="input"
                 type="text"
                 placeholder="帳號"
                 value={this.state.account}
-                onChange={event => this.accountChangeHandler(event)} />
+                onChange={event => this.accountChangeHandler(event)}
+              />
               <span className="icon is-small is-left">
-                <i className="fas fas fa-user"></i>
+                <i className="fas fas fa-user" />
               </span>
             </p>
           </div>
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input"
+              <input
+                className="input"
                 type="email"
                 placeholder="Email"
                 value={this.state.email}
-                onChange={event => this.emailChangeHandler(event)} />
+                onChange={event => this.emailChangeHandler(event)}
+              />
               <span className="icon is-small is-left">
-                <i className="fas fa-envelope"></i>
+                <i className="fas fa-envelope" />
               </span>
             </p>
           </div>
           <div className="field">
             <p className="control has-icons-left">
-              <input className="input"
+              <input
+                className="input"
                 type="password"
                 placeholder="Password"
                 value={this.state.password}
-                onChange={event => this.passwordChangeHandler(event)} />
+                onChange={event => this.passwordChangeHandler(event)}
+              />
               <span className="icon is-small is-left">
-                <i className="fas fa-lock"></i>
+                <i className="fas fa-lock" />
               </span>
             </p>
           </div>
           <div className="field">
             <p className="control">
-              <button className="button is-success"
-                onClick={event => this.registerHandler(event)}>
+              <button
+                className="button is-success"
+                onClick={event => this.registerHandler(event)}
+              >
                 註冊
               </button>
             </p>
           </div>
         </div>
-        <div className="column is-4">
-        </div>
+        <div className="column is-4" />
       </div>
     );
   }
@@ -106,4 +119,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Register);

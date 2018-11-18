@@ -1,9 +1,12 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import dateFns from 'date-fns';
-import axios from 'axios';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import dateFns from "date-fns";
+import axios from "axios";
 import produce from "immer";
 
+/**
+  首頁。
+*/
 class Home extends Component {
   state = {
     golang: {
@@ -21,15 +24,14 @@ class Home extends Component {
   };
 
   componentDidMount() {
-    axios.get('/api/posts/statistics')
-      .then(response => {
-        this.setState(
-          produce(draft => {
-            draft.golang = response.data.golang;
-            draft.nodeJS = response.data.nodeJS;
-          })
-        );
-      });
+    axios.get("/api/posts/statistics").then(response => {
+      this.setState(
+        produce(draft => {
+          draft.golang = response.data.golang;
+          draft.nodeJS = response.data.nodeJS;
+        })
+      );
+    });
   }
 
   render() {
@@ -39,7 +41,7 @@ class Home extends Component {
     if (golang.lastPostTime) {
       golangLastPost = (
         <div>
-          {dateFns.format(new Date(golang.lastPostTime), 'YYYY/MM/DD HH:mm:ss')}
+          {dateFns.format(new Date(golang.lastPostTime), "YYYY/MM/DD HH:mm:ss")}
           <br />
           {golang.lastPostAccount}
         </div>
@@ -52,7 +54,7 @@ class Home extends Component {
     if (nodeJS.lastPostTime) {
       nodeJSLastPost = (
         <div>
-          {dateFns.format(new Date(nodeJS.lastPostTime), 'YYYY/MM/DD HH:mm:ss')}
+          {dateFns.format(new Date(nodeJS.lastPostTime), "YYYY/MM/DD HH:mm:ss")}
           <br />
           {nodeJS.lastPostAccount}
         </div>
@@ -74,9 +76,7 @@ class Home extends Component {
             <tbody>
               <tr>
                 <td>
-                  <Link to="/posts/golang">
-                    Golang
-                  </Link>
+                  <Link to="/posts/golang">Golang</Link>
                 </td>
                 <td>{golang.topicCount}</td>
                 <td>{golang.replyCount}</td>
@@ -84,9 +84,7 @@ class Home extends Component {
               </tr>
               <tr>
                 <td>
-                  <Link to="/posts/nodejs">
-                    Node.js
-                  </Link>
+                  <Link to="/posts/nodejs">Node.js</Link>
                 </td>
                 <td>{nodeJS.topicCount}</td>
                 <td>{nodeJS.replyCount}</td>
@@ -97,11 +95,8 @@ class Home extends Component {
         </div>
         <div className="column is-3">
           <nav className="panel">
-            <p className="panel-heading">
-              TODO: 待實作。
-            </p>
-            <div className="panel-block">
-            </div>
+            <p className="panel-heading">TODO: 待實作。</p>
+            <div className="panel-block" />
           </nav>
         </div>
       </div>

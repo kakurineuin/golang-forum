@@ -1,15 +1,19 @@
-import React, { Component } from 'react';
-import { Link, Route, Switch, Redirect, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import Posts from './pages/Posts';
-import * as authActions from './modules/auth';
-import * as messageActions from './modules/message';
-import './App.css';
-import logo from './assets/logo.png';
+import React, { Component } from "react";
+import { Link, Route, Switch, Redirect, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Posts from "./pages/Posts";
+import Topic from "./pages/Topic";
+import * as authActions from "./modules/auth";
+import * as messageActions from "./modules/message";
+import "./App.css";
+import logo from "./assets/logo.png";
 
+/**
+  主程式。
+*/
 class App extends Component {
   componentDidMount() {
     // 檢查是否登入過，若有就自動登入。
@@ -22,7 +26,7 @@ class App extends Component {
 
   logoutHandler() {
     this.props.onLogout();
-    this.props.history.replace('/');
+    this.props.history.replace("/");
   }
 
   render() {
@@ -33,19 +37,20 @@ class App extends Component {
     if (messageList && messageList.length > 0) {
       for (const message of messageList) {
         const { id, isError, text } = message;
-        const classes = ['notification'];
+        const classes = ["notification"];
 
         if (isError) {
-          classes.push('is-danger');
+          classes.push("is-danger");
         } else {
-          classes.push('is-primary');
+          classes.push("is-primary");
         }
 
         notifications.push(
-          <div key={id} className={classes.join(' ')}>
+          <div key={id} className={classes.join(" ")}>
             <button
               className="delete"
-              onClick={event => this.deleteMessageHandler(id)}></button>
+              onClick={event => this.deleteMessageHandler(id)}
+            />
             {text}
           </div>
         );
@@ -56,18 +61,30 @@ class App extends Component {
     let buttons = null;
 
     if (this.props.user) {
-      myConfigs = <Link to="/my/configs" className="navbar-item">{this.props.user.account}</Link>;
+      myConfigs = (
+        <Link to="/my/configs" className="navbar-item">
+          {this.props.user.account}
+        </Link>
+      );
       buttons = (
         <div className="buttons">
-          <button className="button is-light"
-            onClick={event => this.logoutHandler(event)}>登出</button>
+          <button
+            className="button is-light"
+            onClick={event => this.logoutHandler(event)}
+          >
+            登出
+          </button>
         </div>
       );
     } else {
       buttons = (
         <div className="buttons">
-          <Link to="/register" className="button is-primary">註冊</Link>
-          <Link to="/login" className="button is-light">登入</Link>
+          <Link to="/register" className="button is-primary">
+            註冊
+          </Link>
+          <Link to="/login" className="button is-light">
+            登入
+          </Link>
         </div>
       );
     }
@@ -77,19 +94,23 @@ class App extends Component {
         <nav className="navbar" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
             <Link to="/" className="navbar-item">
-              <img alt="logo" src={logo} style={{ width: '100px', maxHeight: '52px' }} />
+              <img
+                alt="logo"
+                src={logo}
+                style={{ width: "100px", maxHeight: "52px" }}
+              />
             </Link>
           </div>
 
           <div id="navbarBasicExample" className="navbar-menu is-active">
             <div className="navbar-start">
-              <Link to="/" className="navbar-item">Home</Link>
+              <Link to="/" className="navbar-item">
+                Home
+              </Link>
             </div>
             <div className="navbar-end">
               {myConfigs}
-              <div className="navbar-item">
-                {buttons}
-              </div>
+              <div className="navbar-item">{buttons}</div>
             </div>
           </div>
         </nav>
@@ -101,6 +122,7 @@ class App extends Component {
             <Switch>
               <Route path="/register" component={Register} />
               <Route path="/login" component={Login} />
+              <Route path="/posts/:category/topics/:id" component={Topic} />
               <Route path="/posts/:category" component={Posts} />
               <Route path="/" exact component={Home} />
               <Redirect to="/" />
@@ -122,9 +144,14 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onTryAutoLogin: () => dispatch(authActions.authCheckState()),
-    onDeleteMessage: (id) => dispatch(messageActions.deleteMessage(id)),
+    onDeleteMessage: id => dispatch(messageActions.deleteMessage(id)),
     onLogout: () => dispatch(authActions.logout())
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(App)
+);

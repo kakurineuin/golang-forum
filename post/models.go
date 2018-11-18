@@ -4,9 +4,9 @@ import (
 	"time"
 )
 
-// PostStatistic 首頁的文章統計資料。
+// Statistics 首頁的文章統計資料。
 // 其中 TopicCount 和 ReplyCount 為了在查無資料時是 0，所以使用 int 而不是 *int。
-type PostStatistic struct {
+type Statistics struct {
 	TopicCount      int        `json:"topicCount"`
 	ReplyCount      int        `json:"replyCount"`
 	LastPostAccount *string    `json:"lastPostAccount"`
@@ -33,4 +33,15 @@ type Post struct {
 	Content       *string    `json:"content" valid:"required~內文必填。,stringlength(1|500)~內文長度須在1至500之間。"`
 	CreatedAt     *time.Time `json:"createdAt"`
 	UpdatedAt     *time.Time `json:"updatedAt"`
+}
+
+// FindPostsTopicsResult 查詢某個主題討論串的結果。
+type FindPostsTopicsResult struct {
+	ID        *int       `json:"id"`
+	Topic     *string    `json:"topic"`
+	Content   *string    `json:"content"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	Account   *string    `json:"account"`
+	Role      *string    `json:"role"`
 }
