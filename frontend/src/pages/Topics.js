@@ -10,12 +10,12 @@ import dateFns from "date-fns";
 /**
   主題列表頁面。
 */
-class Posts extends Component {
+class Topics extends Component {
   state = {
-    topic: "",
-    content: "",
-    posts: [],
-    totalCount: 0,
+    topic: "", // 新增文章的主題。
+    content: "", // 新增文章的內文。
+    topics: [], // 主題列表。
+    totalCount: 0, // 主題總筆數。
     paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
   };
 
@@ -37,29 +37,26 @@ class Posts extends Component {
   }
 
   createTopicHandler() {
-    console.log("props", this.props);
-    console.log("state", this.state);
     axios
-      .post(`/api/posts/${this.props.match.params.category}`, {
+      .post(`/api/topics/${this.props.match.params.category}`, {
         userProfileID: this.props.user.id,
         topic: this.state.topic,
         content: this.state.content
       })
       .then(response => {
-        console.log("create topic response", response);
         this.setState(
           produce(draft => {
             draft.topic = "";
             draft.content = "";
-            draft.paginationKey = Math.random();
+            draft.paginationKey = Math.random(); // 觸發分頁重新查詢。
           })
         );
       });
   }
 
-  findPosts(offset, limit) {
+  findPostsTopics(offset, limit) {
     axios
-      .get(`/api/posts/${this.props.match.params.category}`, {
+      .get(`/api/topics/${this.props.match.params.category}`, {
         params: {
           offset,
           limit
@@ -68,7 +65,7 @@ class Posts extends Component {
       .then(response => {
         this.setState(
           produce(draft => {
-            draft.posts = response.data.posts;
+            draft.topics = response.data.topics;
             draft.totalCount = response.data.totalCount;
           })
         );
@@ -116,7 +113,7 @@ class Posts extends Component {
       );
     }
 
-    const posts = this.state.posts.map((post, index) => {
+    const topics = this.state.topics.map((post, index) => {
       let lastReply = <td />;
 
       if (post.lastReplyAccount) {
@@ -137,9 +134,7 @@ class Posts extends Component {
       return (
         <tr key={post.id}>
           <td>
-            <Link to={`/posts/${category}/topics/${post.id}`}>
-              {post.topic}
-            </Link>
+            <Link to={`/topics/${category}/${post.id}`}>{post.topic}</Link>
           </td>
           <td>{post.replyCount}</td>
           <td>
@@ -163,12 +158,12 @@ class Posts extends Component {
               <th>最新回覆</th>
             </tr>
           </thead>
-          <tbody>{posts}</tbody>
+          <tbody>{topics}</tbody>
         </table>
         <Pagination
           key={this.state.paginationKey}
           totalCount={this.state.totalCount}
-          findData={(offset, limit) => this.findPosts(offset, limit)}
+          findData={(offset, limit) => this.findPostsTopics(offset, limit)}
         />
         <br />
         {createTopic}
@@ -186,4 +181,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   null
-)(Posts);
+)(Topics);

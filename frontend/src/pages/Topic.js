@@ -29,7 +29,7 @@ class Topic extends Component {
     console.log("props", this.props);
     console.log("state", this.state);
     axios
-      .post(`/api/posts/${this.props.match.params.category}`, {
+      .post(`/api/topics/${this.props.match.params.category}`, {
         userProfileID: this.props.user.id,
         topic: this.state.posts[0].topic,
         content: this.state.content,
@@ -50,7 +50,7 @@ class Topic extends Component {
     const category = this.props.match.params.category;
     const id = this.props.match.params.id;
     axios
-      .get(`/api/posts/${category}/topics/${id}`, {
+      .get(`/api/topics/${category}/${id}`, {
         params: {
           offset,
           limit

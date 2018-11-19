@@ -14,8 +14,8 @@ type Handler struct {
 	DB *gorm.DB
 }
 
-// FindPostsStatistics 查詢文章統計資料。
-func (h Handler) FindPostsStatistics(c echo.Context) (err error) {
+// FindTopicsStatistics 查詢主題統計資料。
+func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 
 	// 查詢 golang 文章統計資料。
 	var golangStatistics Statistics
@@ -51,8 +51,8 @@ func (h Handler) FindPostsStatistics(c echo.Context) (err error) {
 	})
 }
 
-// FindPosts 查詢文章。
-func (h Handler) FindPosts(c echo.Context) (err error) {
+// FindTopics 查詢主題列表。
+func (h Handler) FindTopics(c echo.Context) (err error) {
 	category := c.Param("category")
 	offset := c.QueryParam("offset")
 	limit := c.QueryParam("limit")
@@ -87,12 +87,12 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 		return
 	}
 
-	findPostsResults := make([]FindPostsResult, 0)
+	topics := make([]Topic, 0)
 
 	for rows.Next() {
-		var findPostsResult FindPostsResult
-		h.DB.ScanRows(rows, &findPostsResult)
-		findPostsResults = append(findPostsResults, findPostsResult)
+		var topic Topic
+		h.DB.ScanRows(rows, &topic)
+		topics = append(topics, topic)
 	}
 
 	// 查詢總筆數。
@@ -110,7 +110,7 @@ func (h Handler) FindPosts(c echo.Context) (err error) {
 	row.Scan(&totalCount)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"posts":      findPostsResults,
+		"topics":     topics,
 		"totalCount": totalCount,
 	})
 }
@@ -133,14 +133,22 @@ func (h Handler) CreatePost(c echo.Context) (err error) {
 		return
 	}
 
+	message := ""
+
+	if post.ReplyPostID == nil {
+		message = "新增主題成功。"
+	} else {
+		message = "回覆成功。"
+	}
+
 	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"message": "新增文章成功。",
+		"message": message,
 		"post":    post,
 	})
 }
 
-// FindPostsTopics 查詢某個主題的討論串。
-func (h Handler) FindPostsTopics(c echo.Context) (err error) {
+// FindTopic 查詢某個主題的討論文章。
+func (h Handler) FindTopic(c echo.Context) (err error) {
 	category := c.Param("category")
 	id := c.Param("id")
 	offset := c.QueryParam("offset")
@@ -175,12 +183,12 @@ func (h Handler) FindPostsTopics(c echo.Context) (err error) {
 		return
 	}
 
-	findPostsTopicsResults := make([]FindPostsTopicsResult, 0)
+	findPostsResults := make([]FindPostsResult, 0)
 
 	for rows.Next() {
-		var findPostsTopicsResult FindPostsTopicsResult
-		h.DB.ScanRows(rows, &findPostsTopicsResult)
-		findPostsTopicsResults = append(findPostsTopicsResults, findPostsTopicsResult)
+		var findPostsResult FindPostsResult
+		h.DB.ScanRows(rows, &findPostsResult)
+		findPostsResults = append(findPostsResults, findPostsResult)
 	}
 
 	// 查詢總筆數。
@@ -206,7 +214,7 @@ func (h Handler) FindPostsTopics(c echo.Context) (err error) {
 	row.Scan(&totalCount)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"posts":      findPostsTopicsResults,
+		"posts":      findPostsResults,
 		"totalCount": totalCount,
 	})
 }

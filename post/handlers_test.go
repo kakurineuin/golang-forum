@@ -9,58 +9,58 @@ import (
 )
 
 var _ = Describe("Post Handlers", func() {
-	Describe("Find posts statistics", func() {
+	Describe("Find topics statistics", func() {
 		It("should find suceesfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/posts/statistics", nil)
+			req := httptest.NewRequest(http.MethodGet, "/topics/statistics", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.FindPostsStatistics(c)
+			err := handler.FindTopicsStatistics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
-			fmt.Println("posts statistics", recBody)
+			fmt.Println("topics statistics", recBody)
 
 			Expect(recBody).To(ContainSubstring("golang"))
 			Expect(recBody).To(ContainSubstring("nodeJS"))
 		})
 	})
 
-	Describe("Find posts", func() {
+	Describe("Find topics", func() {
 		It("should find suceesfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/posts/golang?offset=0&limit=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/topics/golang?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category")
 			c.SetParamValues("golang")
-			err := handler.FindPosts(c)
+			err := handler.FindTopics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
-			fmt.Println("Find posts recBody", recBody)
+			fmt.Println("Find topics recBody", recBody)
 
-			Expect(recBody).To(ContainSubstring("posts"))
+			Expect(recBody).To(ContainSubstring("topics"))
 			Expect(recBody).To(ContainSubstring("totalCount"))
 		})
 	})
 
-	Describe("Find posts topics", func() {
+	Describe("Find topic", func() {
 		It("should find suceesfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/posts/golang/topics/30?offset=0&limit=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/topics/golang/30?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", "30")
-			err := handler.FindPostsTopics(c)
+			err := handler.FindTopic(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
-			fmt.Println("Find posts topics recBody", recBody)
+			fmt.Println("Find topic recBody", recBody)
 
 			Expect(recBody).To(ContainSubstring("posts"))
 			Expect(recBody).To(ContainSubstring("totalCount"))

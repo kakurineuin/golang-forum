@@ -45,10 +45,10 @@ func main() {
 
 	// Posts route
 	postHandler := post.Handler{DB: gorm.DB}
-	postsGroup := apiGroup.Group("/posts")
-	postsGroup.GET("/statistics", postHandler.FindPostsStatistics)
-	postsGroup.GET("/:category/topics/:id", postHandler.FindPostsTopics)
-	postsGroup.GET("/:category", postHandler.FindPosts)
+	postsGroup := apiGroup.Group("/topics")
+	postsGroup.GET("/statistics", postHandler.FindTopicsStatistics)
+	postsGroup.GET("/:category/:id", postHandler.FindTopic)
+	postsGroup.GET("/:category", postHandler.FindTopics)
 	jwtMiddleware := middleware.JWT([]byte(auth.JwtSecret))
 	postsGroup.POST("/:category", postHandler.CreatePost, jwtMiddleware)
 

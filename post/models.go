@@ -13,8 +13,8 @@ type Statistics struct {
 	LastPostTime    *time.Time `json:"lastPostTime"`
 }
 
-// FindPostsResult 查詢某個分類的文章主題列表的結果。
-type FindPostsResult struct {
+// Topic 主題資料，查詢主題列表時所用。
+type Topic struct {
 	ID                 *int       `json:"id"`
 	Topic              *string    `json:"topic"`
 	ReplyCount         *int       `json:"replyCount"`
@@ -35,8 +35,8 @@ type Post struct {
 	UpdatedAt     *time.Time `json:"updatedAt"`
 }
 
-// FindPostsTopicsResult 查詢某個主題討論串的結果。
-type FindPostsTopicsResult struct {
+// FindPostsResult 查詢某個主題討論串的結果。
+type FindPostsResult struct {
 	ID        *int       `json:"id"`
 	Topic     *string    `json:"topic"`
 	Content   *string    `json:"content"`

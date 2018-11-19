@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import Posts from "./pages/Posts";
+import Topics from "./pages/Topics";
 import Topic from "./pages/Topic";
 import * as authActions from "./modules/auth";
 import * as messageActions from "./modules/message";
@@ -122,8 +122,8 @@ class App extends Component {
             <Switch>
               <Route path="/register" component={Register} />
               <Route path="/login" component={Login} />
-              <Route path="/posts/:category/topics/:id" component={Topic} />
-              <Route path="/posts/:category" component={Posts} />
+              <Route path="/topics/:category/:id" component={Topic} />
+              <Route path="/topics/:category" component={Topics} />
               <Route path="/" exact component={Home} />
               <Redirect to="/" />
             </Switch>

@@ -24,7 +24,7 @@ class Home extends Component {
   };
 
   componentDidMount() {
-    axios.get("/api/posts/statistics").then(response => {
+    axios.get("/api/topics/statistics").then(response => {
       this.setState(
         produce(draft => {
           draft.golang = response.data.golang;
@@ -76,7 +76,7 @@ class Home extends Component {
             <tbody>
               <tr>
                 <td>
-                  <Link to="/posts/golang">Golang</Link>
+                  <Link to="/topics/golang">Golang</Link>
                 </td>
                 <td>{golang.topicCount}</td>
                 <td>{golang.replyCount}</td>
@@ -84,7 +84,7 @@ class Home extends Component {
               </tr>
               <tr>
                 <td>
-                  <Link to="/posts/nodejs">Node.js</Link>
+                  <Link to="/topics/nodejs">Node.js</Link>
                 </td>
                 <td>{nodeJS.topicCount}</td>
                 <td>{nodeJS.replyCount}</td>
