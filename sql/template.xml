@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Sqls>
+  <Sql name="FindTopicsGolangStatistics">
+    select
+  		(select count(*) from post_golang where reply_post_id is null) as topic_count,
+  		(select count(*) from post_golang where reply_post_id is not null) as reply_count,
+  		u.account as last_post_account,
+  		p.created_at as last_post_time
+  	from post_golang p
+  		inner join user_profile u
+  			on p.user_profile_id = u.id
+  	order by p.id desc
+  	limit 1
+  </Sql>
+  <Sql name="FindTopicsNodeJSStatistics">
+    select
+      (select count(*) from post_nodejs where reply_post_id is null) as topic_count,
+      (select count(*) from post_nodejs where reply_post_id is not null) as reply_count,
+      u.account as last_post_account,
+      p.created_at as last_post_time
+    from post_nodejs p
+      inner join user_profile u
+        on p.user_profile_id = u.id
+    order by p.id desc
+    limit 1
+  </Sql>
+  <Sql name="FindTopics">
+    select
+      p.id,
+      p.topic,
+      IFNULL(last_reply.reply_count, 0) as reply_count,
+      p.created_at,
+      u.account,
+      last_reply.created_at as last_reply_created_at,
+      last_reply.account as last_reply_account
+    from
+      %v p
+      inner join user_profile u
+        on p.user_profile_id = u.id
+      left join view_%v_each_topic_last_reply last_reply
+        on p.id = last_reply.reply_post_id
+    where p.reply_post_id is null
+    order by p.id desc
+    limit ?, ?
+  </Sql>
+  <Sql name="FindTopicsTotalCount">
+    select
+      count(*)
+    from
+      %v p
+      inner join user_profile u
+        on p.user_profile_id = u.id
+      left join view_%v_each_topic_last_reply last_reply
+        on p.id = last_reply.reply_post_id
+    where p.reply_post_id is null
+  </Sql>
+  <Sql name="FindTopic">
+    select
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
+  	from %v p
+  		inner join user_profile u
+  			on p.user_profile_id = u.id
+  	where p.id = ? and p.reply_post_id is null
+  	union all
+  	select
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
+  	from %v p
+  		inner join user_profile u
+  			on p.user_profile_id = u.id
+  	where p.reply_post_id = ?
+  	order by id
+  	limit ?, ?
+  </Sql>
+  <Sql name="FindTopicTotalCount">
+    select
+  		count(*)
+  	from (
+  		select
+  			p.id
+  		from %v p
+  			inner join user_profile u
+  				on p.user_profile_id = u.id
+  		where p.id = ? and p.reply_post_id is null
+  		union all
+  		select
+  			p.id
+  		from %v p
+  			inner join user_profile u
+  				on p.user_profile_id = u.id
+  		where p.reply_post_id = ?) t
+  </Sql>
+</Sqls>

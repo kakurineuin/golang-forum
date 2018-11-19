@@ -1,14 +1,16 @@
-hash: 10657a465d3931a094b815c7a17424efbb23b48addb473cc6956aa9150893b95
-updated: 2018-11-06T00:11:39.6945868+08:00
+hash: a511ea189d55c5b8141e2cb95d1c3f1dc7329a9275a30e1c83c00d854ba8f760
+updated: 2018-11-19T12:14:05.9120927+08:00
 imports:
 - name: github.com/asaskevich/govalidator
   version: ccb8e960c48f04d6935e72476ae4a51028f9e22f
+- name: github.com/beevik/etree
+  version: 9d7e8feddccb4ed1b8afb54e368bd323d2ff652c
 - name: github.com/dgrijalva/jwt-go
   version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
 - name: github.com/fsnotify/fsnotify
   version: ccc981bf80385c528a65fbfdd49bf2d8da22aa23
 - name: github.com/go-sql-driver/mysql
-  version: fd197cdcfae0c686792ef5399f223f5b66a30b6b
+  version: 6be42e0ff99645d7d9626d779001a46e39c5f280
 - name: github.com/hashicorp/hcl
   version: 65a6292f0157eff210d03ed1bf6c59b190b8b906
   subpackages:
@@ -28,11 +30,11 @@ imports:
 - name: github.com/jinzhu/inflection
   version: 04140366298a54a039076d798123ffa108fff46c
 - name: github.com/labstack/echo
-  version: ba1891b3dc1fc5548330e580c51157ea5eb6604f
+  version: 2e9f4ea4e010fa328318107ba074b1b72381c571
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
-  version: 2a618302b929cc20862dda3aa6f02f64dbe740dd
+  version: 7fd9f68ece0bcb1a905fac8f1549f0083f71c51b
   subpackages:
   - bytes
   - color
@@ -47,7 +49,7 @@ imports:
 - name: github.com/mitchellh/mapstructure
   version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
 - name: github.com/pelletier/go-toml
-  version: 81a861c69d25a841d0c4394f0e6f84bc8c5afae0
+  version: aa79e12a973495d00b01f2353330e5275d084731
 - name: github.com/spf13/afero
   version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
   subpackages:
@@ -57,7 +59,7 @@ imports:
 - name: github.com/spf13/jwalterweatherman
   version: 94f6ae3ed3bceceafa716478c5fbf8d29ca601a1
 - name: github.com/spf13/pflag
-  version: 082b515c9490f4eccc758469c3152b77d139f868
+  version: aea12ed6721610dc6ed40141676d7ab0a1dac9e9
 - name: github.com/spf13/viper
   version: 2c12c60302a5a0e62ee102ca9bc996277c2f64f5
 - name: github.com/valyala/bytebufferpool
@@ -65,12 +67,14 @@ imports:
 - name: github.com/valyala/fasttemplate
   version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
 - name: golang.org/x/crypto
-  version: 4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06
+  version: 3d3f9f413869b949e48070b5bc593aa22cc2b8f2
   subpackages:
   - acme
   - acme/autocert
+  - bcrypt
+  - blowfish
 - name: golang.org/x/sys
-  version: 9b800f95dbbc54abff0acf7ee32d88ba4e328c89
+  version: 93218def8b18e66adbdab3eca8ec334700329f1f
   subpackages:
   - unix
 - name: golang.org/x/text
@@ -143,7 +147,7 @@ testImports:
   - matchers/support/goraph/util
   - types
 - name: golang.org/x/net
-  version: c10e9556a7bc0e7c942242b606f0acf024ad5d6a
+  version: adae6a3d119ae4890b46832a2e88a95adc62b8e7
   subpackages:
   - html
   - html/atom

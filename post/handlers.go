@@ -4,10 +4,42 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
+	"github.com/beevik/etree"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
+
+var sqlTemplate = make(map[string]string)
+
+func init() {
+	pwd, _ := os.Getwd()
+	directory := filepath.Base(pwd)
+	sqlTemplatePath := ""
+
+	switch directory {
+	case "post":
+		sqlTemplatePath = "../sql/template.xml"
+	case "forum":
+		sqlTemplatePath = "sql/template.xml"
+	default:
+		fmt.Println("============== directory", directory)
+	}
+
+	doc := etree.NewDocument()
+
+	if err := doc.ReadFromFile(sqlTemplatePath); err != nil {
+		panic(err)
+	}
+
+	sqls := doc.SelectElement("Sqls")
+	for _, sql := range sqls.SelectElements("Sql") {
+		name := sql.SelectAttrValue("name", "")
+		sqlTemplate[name] = sql.Text()
+	}
+}
 
 // Handler 處理請求的 handler。
 type Handler struct {
@@ -20,30 +52,12 @@ func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 	// 查詢 golang 文章統計資料。
 	var golangStatistics Statistics
 
-	h.DB.Raw(`select
-		(select count(*) from post_golang where reply_post_id is null) as topic_count,
-		(select count(*) from post_golang where reply_post_id is not null) as reply_count,
-		u.account as last_post_account,
-		p.created_at as last_post_time
-	from post_golang p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-	order by p.id desc
-	limit 1`).Scan(&golangStatistics)
+	h.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics)
 
 	// 查詢 Node.js 文章統計資料。
 	var nodeJSStatistics Statistics
 
-	h.DB.Raw(`select
-		(select count(*) from post_nodejs where reply_post_id is null) as topic_count,
-		(select count(*) from post_nodejs where reply_post_id is not null) as reply_count,
-		u.account as last_post_account,
-		p.created_at as last_post_time
-	from post_nodejs p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-	order by p.id desc
-	limit 1`).Scan(&nodeJSStatistics)
+	h.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"golang": golangStatistics,
@@ -63,23 +77,7 @@ func (h Handler) FindTopics(c echo.Context) (err error) {
 		return
 	}
 
-	sql := fmt.Sprintf(`select
-		p.id,
-		p.topic,
-		IFNULL(last_reply.reply_count, 0) as reply_count,
-		p.created_at,
-		u.account,
-		last_reply.created_at as last_reply_created_at,
-		last_reply.account as last_reply_account
-	from
-		%v p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-		left join view_post_golang_each_topic_last_reply last_reply
-			on p.id = last_reply.reply_post_id
-	where p.reply_post_id is null
-	order by p.id desc
-	limit ?, ?`, table)
+	sql := fmt.Sprintf(sqlTemplate["FindTopics"], table, table)
 	rows, err := h.DB.Raw(sql, offset, limit).Rows()
 	defer rows.Close()
 
@@ -97,15 +95,7 @@ func (h Handler) FindTopics(c echo.Context) (err error) {
 
 	// 查詢總筆數。
 	totalCount := 0
-	sql = fmt.Sprintf(`select
-		count(*)
-	from
-		%v p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-		left join view_post_golang_each_topic_last_reply last_reply
-			on p.id = last_reply.reply_post_id
-	where p.reply_post_id is null`, table)
+	sql = fmt.Sprintf(sqlTemplate["FindTopicsTotalCount"], table, table)
 	row := h.DB.Raw(sql).Row()
 	row.Scan(&totalCount)
 
@@ -161,21 +151,7 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 		return
 	}
 
-	sql := fmt.Sprintf(`select
-		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
-	from %v p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-	where p.id = ? and p.reply_post_id is null
-	union all
-	select
-		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
-	from %v p
-		inner join user_profile u
-			on p.user_profile_id = u.id
-	where p.reply_post_id = ?
-	order by id
-	limit ?, ?`, table, table)
+	sql := fmt.Sprintf(sqlTemplate["FindTopic"], table, table)
 	rows, err := h.DB.Raw(sql, id, id, offset, limit).Rows()
 	defer rows.Close()
 
@@ -193,23 +169,7 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 
 	// 查詢總筆數。
 	totalCount := 0
-	sql = fmt.Sprintf(`select
-		count(*)
-	from (
-		select
-			p.id
-		from %v p
-			inner join user_profile u
-				on p.user_profile_id = u.id
-		where p.id = ? and p.reply_post_id is null
-		union all
-		select
-			p.id
-		from %v p
-			inner join user_profile u
-				on p.user_profile_id = u.id
-		where p.reply_post_id = ?) t
-		`, table, table)
+	sql = fmt.Sprintf(sqlTemplate["FindTopicTotalCount"], table, table)
 	row := h.DB.Raw(sql, id, id).Row()
 	row.Scan(&totalCount)
 
