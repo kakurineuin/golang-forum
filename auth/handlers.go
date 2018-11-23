@@ -133,6 +133,7 @@ func createToken(userProfile UserProfile) (string, int64, error) {
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = userProfile.ID
 	claims["username"] = userProfile.Username
 	claims["email"] = userProfile.Email
 	claims["exp"] = exp

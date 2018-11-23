@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo"
 )
@@ -179,6 +180,53 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 	})
 }
 
+// UpdatePost 修改文章。
+func (h Handler) UpdatePost(c echo.Context) (err error) {
+	postOnUpdate := new(PostOnUpdate)
+
+	if err = c.Bind(postOnUpdate); err != nil {
+		return
+	}
+
+	if err = c.Validate(postOnUpdate); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": err.Error(),
+		})
+	}
+
+	// 查詢原本文章。
+	post := new(Post)
+	err = h.DB.Table("post_"+c.Param("category")).
+		First(post, c.Param("id")).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	userID := getUserID(c)
+
+	// 不能修改別人的文章。
+	if *post.UserProfileID != userID {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "不能別人的文章。",
+		})
+	}
+
+	// 修改文章。
+	post.Content = postOnUpdate.Content
+	err = h.DB.Table("post_" + c.Param("category")).Save(post).Error
+
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "修改文章成功。",
+		"post":    post,
+	})
+}
+
 func getTable(category string) (string, error) {
 	switch category {
 	case "golang":
@@ -188,4 +236,10 @@ func getTable(category string) (string, error) {
 	default:
 		return "", errors.New("category is error")
 	}
+}
+
+func getUserID(c echo.Context) int {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return int(claims["id"].(float64))
 }

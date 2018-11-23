@@ -51,6 +51,7 @@ func main() {
 	postsGroup.GET("/:category", postHandler.FindTopics)
 	jwtMiddleware := middleware.JWT([]byte(auth.JwtSecret))
 	postsGroup.POST("/:category", postHandler.CreatePost, jwtMiddleware)
+	postsGroup.PUT("/:category/:id", postHandler.UpdatePost, jwtMiddleware)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

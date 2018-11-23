@@ -45,3 +45,8 @@ type FindPostsResult struct {
 	Username  *string    `json:"username"`
 	Role      *string    `json:"role"`
 }
+
+// PostOnUpdate 修改的文章。
+type PostOnUpdate struct {
+	Content *string `json:"content" valid:"required~內文必填。,stringlength(1|500)~內文長度須在1至500之間。"`
+}

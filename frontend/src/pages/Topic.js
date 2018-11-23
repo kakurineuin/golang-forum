@@ -14,9 +14,14 @@ class Topic extends Component {
     posts: [], // 全部文章。
     totalCount: 0, // 文章總數。
     content: "", // 新增回覆內文。
-    paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
+    paginationKey: Math.random(), // 用來觸發分頁重新 render 並查詢資料。
+    postOnUpdate: {
+      content: ""
+    }, // 修改的文章。
+    updatePostModalActivate: false // 是否顯示修改文章對話框。
   };
 
+  // 新增回覆內文。
   contentChangeHandler(value) {
     this.setState(
       produce(draft => {
@@ -25,6 +30,16 @@ class Topic extends Component {
     );
   }
 
+  // 修改文章。
+  postOnUpdateChangeHandler(value) {
+    this.setState(
+      produce(draft => {
+        draft.postOnUpdate.content = value;
+      })
+    );
+  }
+
+  // 新增回覆。
   createReplyHandler() {
     console.log("props", this.props);
     console.log("state", this.state);
@@ -46,6 +61,33 @@ class Topic extends Component {
       });
   }
 
+  // 修改文章。
+  updatePostHandler() {
+    console.log("props", this.props);
+    console.log("state", this.state);
+    const category = this.props.match.params.category;
+    const postID = this.state.postOnUpdate.id;
+    axios
+      .put(`/api/topics/${category}/${postID}`, {
+        content: this.state.postOnUpdate.content
+      })
+      .then(response => {
+        console.log("update post response", response);
+        const updatedPost = response.data.post;
+
+        this.setState(
+          produce(draft => {
+            const post = draft.posts.find(post => post.id === updatedPost.id);
+            post.content = updatedPost.content;
+            post.updatedAt = updatedPost.updatedAt;
+            draft.postOnUpdate = { content: "" };
+            draft.updatePostModalActivate = false;
+          })
+        );
+      });
+  }
+
+  // 查詢此主題文章。
   findPostsByTopicID(offset, limit) {
     const category = this.props.match.params.category;
     const id = this.props.match.params.id;
@@ -65,6 +107,24 @@ class Topic extends Component {
           })
         );
       });
+  }
+
+  openUpdatePostModal(post) {
+    this.setState(
+      produce(draft => {
+        draft.postOnUpdate = Object.assign({}, post);
+        draft.updatePostModalActivate = true;
+      })
+    );
+  }
+
+  closeUpdatePostModal() {
+    this.setState(
+      produce(draft => {
+        draft.postOnUpdate = { content: "" };
+        draft.updatePostModalActivate = false;
+      })
+    );
   }
 
   render() {
@@ -96,14 +156,27 @@ class Topic extends Component {
       );
     }
 
-    const id = parseInt(this.props.match.params.id, 10);
+    const postID = parseInt(this.props.match.params.id, 10);
     const posts = this.state.posts.map((post, index) => {
+      let updateButton = null;
+
+      if (post.username === this.props.user.username) {
+        updateButton = (
+          <button
+            className="button is-primary"
+            onClick={event => this.openUpdatePostModal(post)}
+          >
+            修改
+          </button>
+        );
+      }
+
       let content = null;
 
       // 若是主題文章，顯示主題。
       content = (
         <td>
-          {post.id === id ? (
+          {post.id === postID ? (
             <div>
               <h1 className="title">{post.topic}</h1>
               <hr />
@@ -115,6 +188,7 @@ class Topic extends Component {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
+          {updateButton}
         </td>
       );
 
@@ -163,6 +237,45 @@ class Topic extends Component {
         />
         <br />
         {createReply}
+        <div
+          class={
+            this.state.updatePostModalActivate ? "modal is-active" : "modal"
+          }
+        >
+          <div class="modal-background" />
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">修改文章</p>
+              <button
+                class="delete"
+                aria-label="close"
+                onClick={event => this.closeUpdatePostModal()}
+              />
+            </header>
+            <section class="modal-card-body">
+              <PostEditor
+                value={
+                  this.state.postOnUpdate ? this.state.postOnUpdate.content : ""
+                }
+                changed={value => this.postOnUpdateChangeHandler(value)}
+              />
+            </section>
+            <footer class="modal-card-foot">
+              <button
+                class="button is-primary"
+                onClick={event => this.updatePostHandler(postID)}
+              >
+                確定
+              </button>
+              <button
+                class="button"
+                onClick={event => this.closeUpdatePostModal()}
+              >
+                取消
+              </button>
+            </footer>
+          </div>
+        </div>
       </div>
     );
   }

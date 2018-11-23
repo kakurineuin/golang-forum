@@ -13,7 +13,7 @@ import (
 
 var _ = Describe("Auth Handlers", func() {
 	Describe("Register", func() {
-		It("should register suceesfully", func() {
+		It("should register successfully", func() {
 			requestJSON := `{
 				"username": "test001",
 				"email": "test001@xxx.com",
@@ -40,7 +40,7 @@ var _ = Describe("Auth Handlers", func() {
 		AfterEach(func() {
 			gorm.DB.Where("username = ?", "test001").Delete(auth.UserProfile{})
 		})
-		It("should login suceesfully", func() {
+		It("should login successfully", func() {
 			requestJSON := `{
 				"email": "test001@xxx.com",
 				"password": "test001"
