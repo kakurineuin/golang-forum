@@ -160,7 +160,7 @@ class Topic extends Component {
     const posts = this.state.posts.map((post, index) => {
       let updateButton = null;
 
-      if (post.username === this.props.user.username) {
+      if (this.props.user && post.username === this.props.user.username) {
         updateButton = (
           <button
             className="button is-primary"

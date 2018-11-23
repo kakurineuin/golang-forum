@@ -1,6 +1,7 @@
 import produce from "immer";
 import axios from "axios";
 import format from "date-fns/format";
+import history from "../utils/history";
 
 // Action Types
 export const AUTH_SUCCESS = "forum/auth/AUTH_SUCCESS";
@@ -52,7 +53,8 @@ export function login(email, password) {
 }
 
 export function logout() {
-  localStorage.removeItem("user");
+  localStorage.clear();
+  history.replace("/");
   return {
     type: AUTH_LOGOUT
   };

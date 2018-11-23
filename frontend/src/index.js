@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
+import history from "./utils/history";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
@@ -10,6 +11,7 @@ import axios from "axios";
 import { startLoad, stopLoad } from "./modules/load";
 import { showMessage } from "./modules/message";
 import "bulma/css/bulma.css";
+import * as authActions from "./modules/auth";
 
 // 初始化 axios。
 axios.interceptors.request.use(
@@ -51,21 +53,30 @@ axios.interceptors.response.use(
     console.log("interceptor error.response", error.response);
     store.dispatch(stopLoad());
 
-    // 顯示錯誤訊息。
-    const text =
-      error.response.data && error.response.data.message
-        ? error.response.data.message
-        : error.toString();
-    store.dispatch(showMessage(Date.now(), true, text));
+    // 若 JWT 過期。
+    if (error.response.status === 401 && localStorage.getItem("user")) {
+      store.dispatch(authActions.logout());
+      store.dispatch(
+        showMessage(Date.now(), true, "登入時效已過期，請重新登入。")
+      );
+    } else {
+      // 顯示錯誤訊息。
+      const text =
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.toString();
+      store.dispatch(showMessage(Date.now(), true, text));
+    }
+
     return Promise.reject(error);
   }
 );
 
 const app = (
   <Provider store={store}>
-    <BrowserRouter>
+    <Router history={history}>
       <App />
-    </BrowserRouter>
+    </Router>
   </Provider>
 );
 
