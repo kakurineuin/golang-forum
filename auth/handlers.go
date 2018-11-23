@@ -121,12 +121,6 @@ func (h Handler) Login(c echo.Context) (err error) {
 	return returnTokenAndUserProfile(c, userProfile, "登入成功。")
 }
 
-// Logout 登出。
-func (h Handler) Logout(c echo.Context) error {
-	// TODO: 待實做。
-	return nil
-}
-
 func createToken(userProfile UserProfile) (string, int64, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	exp := time.Now().Add(time.Hour * 72).Unix()

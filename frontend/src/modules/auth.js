@@ -53,7 +53,6 @@ export function login(email, password) {
 
 export function logout() {
   localStorage.removeItem("user");
-  // TODO: 改為送出請求到後端把 token 加入到黑名單。
   return {
     type: AUTH_LOGOUT
   };
