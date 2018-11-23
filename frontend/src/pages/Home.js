@@ -12,13 +12,13 @@ class Home extends Component {
     golang: {
       totalCount: 0,
       replyCount: 0,
-      lastPostAccount: null,
+      lastPostUsername: null,
       lastPostTime: null
     },
     nodeJS: {
       totalCount: 0,
       replyCount: 0,
-      lastPostAccount: null,
+      lastPostUsername: null,
       lastPostTime: null
     }
   };
@@ -43,7 +43,7 @@ class Home extends Component {
         <div>
           {dateFns.format(new Date(golang.lastPostTime), "YYYY/MM/DD HH:mm:ss")}
           <br />
-          {golang.lastPostAccount}
+          {golang.lastPostUsername}
         </div>
       );
     }
@@ -56,7 +56,7 @@ class Home extends Component {
         <div>
           {dateFns.format(new Date(nodeJS.lastPostTime), "YYYY/MM/DD HH:mm:ss")}
           <br />
-          {nodeJS.lastPostAccount}
+          {nodeJS.lastPostUsername}
         </div>
       );
     }

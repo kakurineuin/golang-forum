@@ -13,7 +13,7 @@ class Topic extends Component {
   state = {
     posts: [], // 全部文章。
     totalCount: 0, // 文章總數。
-    content: "", // 回覆內文。
+    content: "", // 新增回覆內文。
     paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
   };
 
@@ -133,7 +133,7 @@ class Topic extends Component {
       return (
         <tr key={post.id}>
           <td>
-            <h6 className="title is-6">{post.account}</h6>
+            <h6 className="title is-6">{post.username}</h6>
             <div className="is-size-7">{createdAt + " 新增"}</div>
             {updatedAt !== createdAt ? (
               <div className="is-size-7">{updatedAt + " 修改"}</div>

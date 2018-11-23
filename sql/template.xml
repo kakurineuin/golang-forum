@@ -4,7 +4,7 @@
     select
   		(select count(*) from post_golang where reply_post_id is null) as topic_count,
   		(select count(*) from post_golang where reply_post_id is not null) as reply_count,
-  		u.account as last_post_account,
+  		u.username as last_post_username,
   		p.created_at as last_post_time
   	from post_golang p
   		inner join user_profile u
@@ -16,7 +16,7 @@
     select
       (select count(*) from post_nodejs where reply_post_id is null) as topic_count,
       (select count(*) from post_nodejs where reply_post_id is not null) as reply_count,
-      u.account as last_post_account,
+      u.username as last_post_username,
       p.created_at as last_post_time
     from post_nodejs p
       inner join user_profile u
@@ -30,9 +30,9 @@
       p.topic,
       IFNULL(last_reply.reply_count, 0) as reply_count,
       p.created_at,
-      u.account,
+      u.username,
       last_reply.created_at as last_reply_created_at,
-      last_reply.account as last_reply_account
+      last_reply.username as last_reply_username
     from
       %v p
       inner join user_profile u
@@ -56,14 +56,14 @@
   </Sql>
   <Sql name="FindTopic">
     select
-  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.username, u.role
   	from %v p
   		inner join user_profile u
   			on p.user_profile_id = u.id
   	where p.id = ? and p.reply_post_id is null
   	union all
   	select
-  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.account, u.role
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.username, u.role
   	from %v p
   		inner join user_profile u
   			on p.user_profile_id = u.id

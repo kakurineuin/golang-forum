@@ -7,10 +7,10 @@ import (
 // Statistics 首頁的文章統計資料。
 // 其中 TopicCount 和 ReplyCount 為了在查無資料時是 0，所以使用 int 而不是 *int。
 type Statistics struct {
-	TopicCount      int        `json:"topicCount"`
-	ReplyCount      int        `json:"replyCount"`
-	LastPostAccount *string    `json:"lastPostAccount"`
-	LastPostTime    *time.Time `json:"lastPostTime"`
+	TopicCount       int        `json:"topicCount"`
+	ReplyCount       int        `json:"replyCount"`
+	LastPostUsername *string    `json:"lastPostUsername"`
+	LastPostTime     *time.Time `json:"lastPostTime"`
 }
 
 // Topic 主題資料，查詢主題列表時所用。
@@ -19,9 +19,9 @@ type Topic struct {
 	Topic              *string    `json:"topic"`
 	ReplyCount         *int       `json:"replyCount"`
 	CreatedAt          *time.Time `json:"createdAt"`
-	Account            *string    `json:"account"`
+	Username           *string    `json:"username"`
 	LastReplyCreatedAt *time.Time `json:"lastReplyCreatedAt"`
-	LastReplyAccount   *string    `json:"lastReplyAccount"`
+	LastReplyUsername  *string    `json:"lastReplyUsername"`
 }
 
 // Post 文章。
@@ -42,6 +42,6 @@ type FindPostsResult struct {
 	Content   *string    `json:"content"`
 	CreatedAt *time.Time `json:"createdAt"`
 	UpdatedAt *time.Time `json:"updatedAt"`
-	Account   *string    `json:"account"`
+	Username  *string    `json:"username"`
 	Role      *string    `json:"role"`
 }

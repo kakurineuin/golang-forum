@@ -8,14 +8,14 @@ import * as authActions from "../modules/auth";
 */
 class Register extends Component {
   state = {
-    account: "",
+    username: "",
     email: "",
     password: ""
   };
 
-  accountChangeHandler(event) {
+  usernameChangeHandler(event) {
     this.setState({
-      account: event.target.value
+      username: event.target.value
     });
   }
 
@@ -34,7 +34,7 @@ class Register extends Component {
   registerHandler(event) {
     event.preventDefault();
     this.props.onRegister(
-      this.state.account,
+      this.state.username,
       this.state.email,
       this.state.password
     );
@@ -53,8 +53,8 @@ class Register extends Component {
                 className="input"
                 type="text"
                 placeholder="帳號"
-                value={this.state.account}
-                onChange={event => this.accountChangeHandler(event)}
+                value={this.state.username}
+                onChange={event => this.usernameChangeHandler(event)}
               />
               <span className="icon is-small is-left">
                 <i className="fas fas fa-user" />
@@ -114,8 +114,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onRegister: (account, email, password) =>
-      dispatch(authActions.register(account, email, password))
+    onRegister: (username, email, password) =>
+      dispatch(authActions.register(username, email, password))
   };
 };
 

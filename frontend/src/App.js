@@ -63,7 +63,7 @@ class App extends Component {
     if (this.props.user) {
       myConfigs = (
         <Link to="/my/configs" className="navbar-item">
-          {this.props.user.account}
+          {this.props.user.username}
         </Link>
       );
       buttons = (

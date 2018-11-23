@@ -39,7 +39,7 @@ func (h Handler) Register(c echo.Context) (err error) {
 	count := 0
 
 	if err = h.DB.Table("user_profile").
-		Where("account = ?", userProfile.Account).
+		Where("username = ?", userProfile.Username).
 		Count(&count).Error; err != nil {
 		return
 	}
@@ -133,7 +133,7 @@ func createToken(userProfile UserProfile) (string, int64, error) {
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["account"] = userProfile.Account
+	claims["username"] = userProfile.Username
 	claims["email"] = userProfile.Email
 	claims["exp"] = exp
 

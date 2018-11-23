@@ -33,10 +33,10 @@ export function authSuccess(user) {
   };
 }
 
-export function register(account, email, password) {
+export function register(username, email, password) {
   return dispatch => {
     axios
-      .post("/api/auth/register", { account, email, password })
+      .post("/api/auth/register", { username, email, password })
       .then(response => {
         dispatch(authSuccess(buildUser(response)));
       });

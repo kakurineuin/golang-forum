@@ -116,7 +116,7 @@ class Topics extends Component {
     const topics = this.state.topics.map((post, index) => {
       let lastReply = <td />;
 
-      if (post.lastReplyAccount) {
+      if (post.lastReplyUsername) {
         lastReply = (
           <td>
             {dateFns.format(
@@ -124,7 +124,7 @@ class Topics extends Component {
               "YYYY/MM/DD HH:mm:ss"
             )}
             <br />
-            {post.lastReplyAccount}
+            {post.lastReplyUsername}
           </td>
         );
       }
@@ -140,7 +140,7 @@ class Topics extends Component {
           <td>
             {dateFns.format(new Date(post.createdAt), "YYYY/MM/DD HH:mm:ss")}
             <br />
-            {post.account}
+            {post.username}
           </td>
           {lastReply}
         </tr>
