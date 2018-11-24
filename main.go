@@ -43,7 +43,8 @@ func main() {
 	authGroup.POST("/login", authHandler.Login)
 
 	// Posts route
-	postHandler := post.Handler{DB: gorm.DB}
+	postService := post.Service{DB: gorm.DB}
+	postHandler := post.Handler{Service: &postService}
 	postsGroup := apiGroup.Group("/topics")
 	postsGroup.GET("/statistics", postHandler.FindTopicsStatistics)
 	postsGroup.GET("/:category/:id", postHandler.FindTopic)

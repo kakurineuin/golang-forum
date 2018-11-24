@@ -2,13 +2,13 @@ package post_test
 
 import (
 	"fmt"
-	"forum/auth"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -72,6 +72,32 @@ var _ = Describe("Post Handlers", func() {
 		})
 	})
 
+	Describe("Create post", func() {
+		It("should create successfully", func() {
+			requestJSON := `{
+				"userProfileID": 2,
+				"replyPostID": null,
+				"topic": "測試新增文章",
+				"content": "測試新增文章。"
+			}`
+			req := httptest.NewRequest(http.MethodPost, "/topics/golang", strings.NewReader(requestJSON))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetParamNames("category")
+			c.SetParamValues("golang")
+			err := handler.CreatePost(c)
+
+			Expect(err).To(BeNil())
+			Expect(rec.Code).To(Equal(http.StatusCreated))
+
+			recBody := rec.Body.String()
+			fmt.Println("Create post recBody", recBody)
+
+			Expect(recBody).To(ContainSubstring("post"))
+		})
+	})
+
 	Describe("Update post", func() {
 		It("should update successfully", func() {
 			requestJSON := `{
@@ -79,14 +105,12 @@ var _ = Describe("Post Handlers", func() {
 			}`
 			req := httptest.NewRequest(http.MethodPut, "/topics/golang/30", strings.NewReader(requestJSON))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-			req.Header.Set(echo.HeaderAuthorization, `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHh4eC5jb20iLCJleHAiOjE1NDMyMDgwODMsImlkIjoyLCJ1c2VybmFtZSI6ImFkbWluIn0.TumjZ-tJHoVBTyVpW5nxTTi3fZOuV1yhFaL1aFF846M`)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", "30")
-
-			jwtMiddleware := middleware.JWT([]byte(auth.JwtSecret))
-			err := jwtMiddleware(handler.UpdatePost)(c)
+			c.Set("user", createToken())
+			err := handler.UpdatePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -98,3 +122,16 @@ var _ = Describe("Post Handlers", func() {
 		})
 	})
 })
+
+func createToken() *jwt.Token {
+	token := jwt.New(jwt.SigningMethodHS256)
+	exp := time.Now().Add(time.Hour * 72).Unix()
+
+	// Set claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = float64(2)
+	claims["username"] = "admin"
+	claims["email"] = "admin@xxx.com"
+	claims["exp"] = exp
+	return token
+}
