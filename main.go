@@ -4,6 +4,7 @@ import (
 	"forum/auth"
 	"forum/config"
 	"forum/db/gorm"
+	fe "forum/error"
 	"forum/post"
 	"forum/validator"
 	"github.com/labstack/echo"
@@ -21,6 +22,19 @@ func main() {
 	)
 
 	e := echo.New()
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		c.Logger().Error(err)
+
+		if customError, ok := err.(fe.CustomError); ok {
+			c.JSON(customError.HTTPStatusCode, map[string]interface{}{
+				"message": customError.Message,
+			})
+			return
+		}
+
+		e.DefaultHTTPErrorHandler(err, c)
+	}
+
 	validator := validator.InitValidator()
 	e.Validator = &validator
 	e.Logger.SetLevel(log.INFO)
@@ -37,7 +51,8 @@ func main() {
 	apiGroup := e.Group("/api")
 
 	// Auth route
-	authHandler := auth.Handler{DB: gorm.DB}
+	authService := auth.Service{DB: gorm.DB}
+	authHandler := auth.Handler{Service: &authService}
 	authGroup := apiGroup.Group("/auth")
 	authGroup.POST("/register", authHandler.Register)
 	authGroup.POST("/login", authHandler.Login)

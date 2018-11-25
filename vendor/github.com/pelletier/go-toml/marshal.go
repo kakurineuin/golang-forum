@@ -244,9 +244,17 @@ func (e *Encoder) SetTagMultiline(v string) *Encoder {
 
 func (e *Encoder) marshal(v interface{}) ([]byte, error) {
 	mtype := reflect.TypeOf(v)
-	if mtype.Kind() != reflect.Struct {
-		return []byte{}, errors.New("Only a struct can be marshaled to TOML")
+
+	switch mtype.Kind() {
+	case reflect.Struct, reflect.Map:
+	case reflect.Ptr:
+		if mtype.Elem().Kind() != reflect.Struct {
+			return []byte{}, errors.New("Only pointer to struct can be marshaled to TOML")
+		}
+	default:
+		return []byte{}, errors.New("Only a struct or map can be marshaled to TOML")
 	}
+
 	sval := reflect.ValueOf(v)
 	if isCustomMarshaler(mtype) {
 		return callCustomMarshaler(sval)
@@ -470,7 +478,12 @@ func (d *Decoder) valueFromTree(mtype reflect.Type, tval *Tree) (reflect.Value, 
 			opts := tomlOptions(mtypef, an)
 			if opts.include {
 				baseKey := opts.name
-				keysToTry := []string{baseKey, strings.ToLower(baseKey), strings.ToTitle(baseKey)}
+				keysToTry := []string{
+					baseKey,
+					strings.ToLower(baseKey),
+					strings.ToTitle(baseKey),
+					strings.ToLower(string(baseKey[0])) + baseKey[1:],
+				}
 				for _, key := range keysToTry {
 					exists := tval.Has(key)
 					if !exists {

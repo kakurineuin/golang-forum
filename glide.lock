@@ -1,5 +1,5 @@
 hash: a511ea189d55c5b8141e2cb95d1c3f1dc7329a9275a30e1c83c00d854ba8f760
-updated: 2018-11-19T12:14:05.9120927+08:00
+updated: 2018-11-25T12:33:06.3062452+08:00
 imports:
 - name: github.com/asaskevich/govalidator
   version: ccb8e960c48f04d6935e72476ae4a51028f9e22f
@@ -30,7 +30,7 @@ imports:
 - name: github.com/jinzhu/inflection
   version: 04140366298a54a039076d798123ffa108fff46c
 - name: github.com/labstack/echo
-  version: 2e9f4ea4e010fa328318107ba074b1b72381c571
+  version: c7eb8da9ec73e78c4f38413f3f835e0cd52c7d72
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
@@ -41,7 +41,7 @@ imports:
   - log
   - random
 - name: github.com/magiconair/properties
-  version: c2353362d570a7bfa228149c62842019201cfb71
+  version: 7c38529aac7222391b7a2661365177a97e21b998
 - name: github.com/mattn/go-colorable
   version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
 - name: github.com/mattn/go-isatty
@@ -49,7 +49,7 @@ imports:
 - name: github.com/mitchellh/mapstructure
   version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
 - name: github.com/pelletier/go-toml
-  version: aa79e12a973495d00b01f2353330e5275d084731
+  version: 27c6b39a135b7dc87a14afb068809132fb7a9a8f
 - name: github.com/spf13/afero
   version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
   subpackages:
@@ -74,7 +74,7 @@ imports:
   - bcrypt
   - blowfish
 - name: golang.org/x/sys
-  version: 93218def8b18e66adbdab3eca8ec334700329f1f
+  version: 62eef0e2fa9b2c385f7b2778e763486da6880d37
   subpackages:
   - unix
 - name: golang.org/x/text
@@ -113,7 +113,7 @@ testImports:
   - watch
   - winfile
 - name: github.com/onsi/ginkgo
-  version: 3774a09d95489ccaa16032e0770d08ea77ba6184
+  version: 2e1be8f7d90e9d3e3e58b0ce470f2f14d075406f
   subpackages:
   - config
   - internal/codelocation
@@ -133,7 +133,7 @@ testImports:
   - reporters/stenographer/support/go-isatty
   - types
 - name: github.com/onsi/gomega
-  version: 7615b9433f86a8bdf29709bf288bc4fd0636a369
+  version: 65fb64232476ad9046e57c26cd0bff3d3a8dc6cd
   subpackages:
   - format
   - internal/assertion

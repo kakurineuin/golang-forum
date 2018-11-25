@@ -32,7 +32,8 @@ var _ = BeforeSuite(func() {
 		config.Viper.GetString("database.dbname"),
 	)
 
-	handler = auth.Handler{DB: gorm.DB}
+	service := auth.Service{DB: gorm.DB}
+	handler = auth.Handler{Service: &service}
 
 	e = echo.New()
 	validator := validator.InitValidator()

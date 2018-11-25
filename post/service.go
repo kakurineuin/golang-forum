@@ -3,13 +3,12 @@ package post
 import (
 	"errors"
 	"fmt"
+	fe "forum/error"
+	"github.com/beevik/etree"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/beevik/etree"
-	"github.com/jinzhu/gorm"
-	"github.com/labstack/echo"
 )
 
 var sqlTemplate = make(map[string]string)
@@ -47,22 +46,20 @@ type Service struct {
 }
 
 // FindTopicsStatistics 查詢主題統計資料。
-func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics *Statistics, err error) {
-	golangStatistics = new(Statistics)
-	nodeJSStatistics = new(Statistics)
+func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Statistics, err error) {
 
 	// 查詢 golang 文章統計資料。
-	err = s.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(golangStatistics).Error
+	err = s.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
 
 	if err != nil {
-		return nil, nil, err
+		return Statistics{}, Statistics{}, err
 	}
 
 	// 查詢 Node.js 文章統計資料。
-	err = s.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(nodeJSStatistics).Error
+	err = s.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
 
 	if err != nil {
-		return nil, nil, err
+		return Statistics{}, Statistics{}, err
 	}
 
 	return
@@ -132,28 +129,26 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 }
 
 // UpdatePost 修改文章。
-func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, userID int) (post *Post, err error) {
-	post = new(Post)
+func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, userID int) (post Post, err error) {
 
 	// 查詢原本文章。
-	err = s.DB.Table("post_" + category).First(post, id).Error
+	err = s.DB.Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
-		return nil, err
+		return Post{}, err
 	}
 
 	// 不能修改別人的文章。
 	if *post.UserProfileID != userID {
-		err = echo.NewHTTPError(http.StatusBadRequest, "不能修改別人的文章。")
-		return nil, err
+		return Post{}, fe.CustomError{http.StatusBadRequest, "不能修改別人的文章。"}
 	}
 
 	// 修改文章。
 	post.Content = postOnUpdate.Content
-	err = s.DB.Table("post_" + category).Save(post).Error
+	err = s.DB.Table("post_" + category).Save(&post).Error
 
 	if err != nil {
-		return nil, err
+		return Post{}, err
 	}
 
 	return

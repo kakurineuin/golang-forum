@@ -1,10 +1,10 @@
 package post
 
 import (
-	"net/http"
-	"strconv"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+	"net/http"
+	"strconv"
 )
 
 // Handler 處理請求的 handler。
@@ -21,8 +21,8 @@ func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"golang": *golangStatistics,
-		"nodeJS": *nodeJSStatistics,
+		"golang": golangStatistics,
+		"nodeJS": nodeJSStatistics,
 	})
 }
 
@@ -112,7 +112,7 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 	c.Logger().Infof("category: %v, id: %v, offset: %v, limit: %v", category, id, offset, limit)
 
 	findPostsResults, totalCount, err := h.Service.FindTopic(category, id, offset, limit)
-	
+
 	if err != nil {
 		return
 	}
