@@ -1,7 +1,7 @@
 package auth
 
 import (
-	fe "forum/error"
+	fe "github.com/kakurineuin/golang-forum/error"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"

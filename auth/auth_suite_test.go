@@ -2,10 +2,10 @@ package auth_test
 
 import (
 	"context"
-	"forum/auth"
-	"forum/config"
-	"forum/db/gorm"
-	"forum/validator"
+	"github.com/kakurineuin/golang-forum/auth"
+	"github.com/kakurineuin/golang-forum/config"
+	"github.com/kakurineuin/golang-forum/db/gorm"
+	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"

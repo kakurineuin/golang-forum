@@ -3,7 +3,7 @@ package post
 import (
 	"errors"
 	"fmt"
-	fe "forum/error"
+	fe "github.com/kakurineuin/golang-forum/error"
 	"github.com/beevik/etree"
 	"github.com/jinzhu/gorm"
 	"net/http"
@@ -21,7 +21,7 @@ func init() {
 	switch directory {
 	case "post":
 		sqlTemplatePath = "../sql/template.xml"
-	case "forum":
+	case "golang-forum":
 		sqlTemplatePath = "sql/template.xml"
 	default:
 		fmt.Println("============== directory", directory)

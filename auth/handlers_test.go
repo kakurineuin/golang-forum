@@ -1,8 +1,8 @@
 package auth_test
 
 import (
-	"forum/auth"
-	"forum/db/gorm"
+	"github.com/kakurineuin/golang-forum/auth"
+	"github.com/kakurineuin/golang-forum/db/gorm"
 	"github.com/labstack/echo"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -2,10 +2,10 @@ package post_test
 
 import (
 	"context"
-	"forum/config"
-	"forum/db/gorm"
-	"forum/post"
-	"forum/validator"
+	"github.com/kakurineuin/golang-forum/config"
+	"github.com/kakurineuin/golang-forum/db/gorm"
+	"github.com/kakurineuin/golang-forum/post"
+	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
