@@ -1,10 +1,11 @@
 package post
 
 import (
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
 	"net/http"
 	"strconv"
+
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 )
 
 // Handler 處理請求的 handler。
@@ -29,6 +30,7 @@ func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 // FindTopics 查詢主題列表。
 func (h Handler) FindTopics(c echo.Context) (err error) {
 	category := c.Param("category")
+	searchTopic := c.QueryParam("searchTopic")
 	offset, err := strconv.Atoi(c.QueryParam("offset"))
 
 	if err != nil {
@@ -41,8 +43,8 @@ func (h Handler) FindTopics(c echo.Context) (err error) {
 		return
 	}
 
-	c.Logger().Infof("category: %v, offset: %v, limit: %v", category, offset, limit)
-	topics, totalCount, err := h.Service.FindTopics(category, offset, limit)
+	c.Logger().Infof("category: %v, searchTopic: %v, offset: %v, limit: %v", category, searchTopic, offset, limit)
+	topics, totalCount, err := h.Service.FindTopics(category, searchTopic, offset, limit)
 
 	if err != nil {
 		return

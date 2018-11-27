@@ -40,6 +40,7 @@
       left join view_%v_each_topic_last_reply last_reply
         on p.id = last_reply.reply_post_id
     where p.reply_post_id is null
+      and p.topic like ? 
     order by p.id desc
     limit ?, ?
   </Sql>
@@ -53,6 +54,7 @@
       left join view_%v_each_topic_last_reply last_reply
         on p.id = last_reply.reply_post_id
     where p.reply_post_id is null
+      and p.topic like ? 
   </Sql>
   <Sql name="FindTopic">
     select

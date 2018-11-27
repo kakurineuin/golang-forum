@@ -16,6 +16,8 @@ class Topics extends Component {
     content: "", // 新增文章的內文。
     topics: [], // 主題列表。
     totalCount: 0, // 主題總筆數。
+    inputSearchTopic: "", // 搜尋輸入框輸入的值。
+    searchTopic: "", // 請求參數：搜尋的主題。
     paginationKey: Math.random() // 用來觸發分頁重新 render 並查詢資料。
   };
 
@@ -54,10 +56,43 @@ class Topics extends Component {
       });
   }
 
+  inputSearchTopicChangeHandler(value) {
+    this.setState(
+      produce(draft => {
+        draft.inputSearchTopic = value;
+      })
+    );
+  }
+
+  inputSearchTopicKeyPressHandler(event) {
+    if (event.key !== "Enter") return;
+    this.searchHandler();
+  }
+
+  searchHandler() {
+    this.setState(
+      produce(draft => {
+        draft.searchTopic = draft.inputSearchTopic;
+        draft.inputSearchTopic = "";
+        draft.paginationKey = Math.random(); // 觸發分頁重新查詢。
+      })
+    );
+  }
+
+  deleteTagHandler() {
+    this.setState(
+      produce(draft => {
+        draft.searchTopic = "";
+        draft.paginationKey = Math.random(); // 觸發分頁重新查詢。
+      })
+    );
+  }
+
   findPostsTopics(offset, limit) {
     axios
       .get(`/api/topics/${this.props.match.params.category}`, {
         params: {
+          searchTopic: this.state.searchTopic,
           offset,
           limit
         }
@@ -147,8 +182,47 @@ class Topics extends Component {
       );
     });
 
+    // 顯示搜尋主題的標籤。
+    let tagSearchTopic = null;
+
+    if (this.state.searchTopic) {
+      tagSearchTopic = (
+        <span class="tag is-medium">
+          {this.state.searchTopic}
+          <button
+            class="delete is-small"
+            onClick={event => this.deleteTagHandler()}
+          />
+        </span>
+      );
+    }
+
     return (
       <div className="container">
+        <div className="field has-addons">
+          <div className="control">
+            <input
+              className="input"
+              type="text"
+              value={this.state.inputSearchTopic}
+              onChange={event =>
+                this.inputSearchTopicChangeHandler(event.target.value)
+              }
+              onKeyPress={event => this.inputSearchTopicKeyPressHandler(event)}
+              placeholder="搜尋主題"
+            />
+          </div>
+          <div className="control">
+            <button
+              className="button is-info"
+              onClick={event => this.searchHandler()}
+            >
+              搜尋
+            </button>
+          </div>
+        </div>
+        {tagSearchTopic}
+        <hr />
         <table className="table is-bordered is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>

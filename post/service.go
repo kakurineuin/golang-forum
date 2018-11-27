@@ -3,12 +3,14 @@ package post
 import (
 	"errors"
 	"fmt"
-	fe "github.com/kakurineuin/golang-forum/error"
-	"github.com/beevik/etree"
-	"github.com/jinzhu/gorm"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/beevik/etree"
+	"github.com/jinzhu/gorm"
+	fe "github.com/kakurineuin/golang-forum/error"
 )
 
 var sqlTemplate = make(map[string]string)
@@ -66,19 +68,22 @@ func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Stat
 }
 
 // FindTopics 查詢主題列表。
-func (s Service) FindTopics(category string, offset, limit int) (topics []Topic, totalCount int, err error) {
+func (s Service) FindTopics(category, searchTopic string, offset, limit int) (topics []Topic, totalCount int, err error) {
+	topics = make([]Topic, 0)
+	searchTopic = "%" + strings.TrimSpace(searchTopic) + "%"
+
 	table, err := getTable(category)
 
 	if err != nil {
-		return nil, 0, err
+		return topics, 0, err
 	}
 
 	sql := fmt.Sprintf(sqlTemplate["FindTopics"], table, table)
-	rows, err := s.DB.Raw(sql, offset, limit).Rows()
+	rows, err := s.DB.Raw(sql, searchTopic, offset, limit).Rows()
 	defer rows.Close()
 
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return nil, 0, err
+	if err != nil {
+		return topics, 0, err
 	}
 
 	for rows.Next() {
@@ -89,7 +94,7 @@ func (s Service) FindTopics(category string, offset, limit int) (topics []Topic,
 
 	// 查詢總筆數。
 	sql = fmt.Sprintf(sqlTemplate["FindTopicsTotalCount"], table, table)
-	row := s.DB.Raw(sql).Row()
+	row := s.DB.Raw(sql, searchTopic).Row()
 	row.Scan(&totalCount)
 	return
 }

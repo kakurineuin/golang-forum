@@ -32,7 +32,7 @@ class Pagination extends Component {
   render() {
     const currentPage = this.state.currentPage; // 當前頁數。
     const totalCount = this.props.totalCount; // 總筆數。
-    const maxPage = Math.ceil(totalCount / this.state.limit); // 最大頁數。
+    const maxPage = Math.ceil(totalCount / this.state.limit) || 1; // 最大頁數。
     console.log(
       "currentPage: {}, totalCount: {}, maxPage: {}",
       currentPage,
