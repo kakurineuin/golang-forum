@@ -31,6 +31,11 @@ class Register extends Component {
     });
   }
 
+  passwordKeyPressHandler(event) {
+    if (event.key !== "Enter") return;
+    this.registerHandler(event);
+  }
+
   registerHandler(event) {
     event.preventDefault();
     this.props.onRegister(
@@ -48,11 +53,12 @@ class Register extends Component {
         <div className="column is-4" />
         <div className="column is-4">
           <div className="field">
+            <label className="label">使用者名稱</label>
             <p className="control has-icons-left">
               <input
                 className="input"
                 type="text"
-                placeholder="帳號"
+                placeholder="使用者名稱"
                 value={this.state.username}
                 onChange={event => this.usernameChangeHandler(event)}
               />
@@ -62,6 +68,7 @@ class Register extends Component {
             </p>
           </div>
           <div className="field">
+            <label className="label">Email</label>
             <p className="control has-icons-left">
               <input
                 className="input"
@@ -76,13 +83,15 @@ class Register extends Component {
             </p>
           </div>
           <div className="field">
+            <label className="label">密碼</label>
             <p className="control has-icons-left">
               <input
                 className="input"
                 type="password"
-                placeholder="Password"
+                placeholder="密碼"
                 value={this.state.password}
                 onChange={event => this.passwordChangeHandler(event)}
+                onKeyPress={event => this.passwordKeyPressHandler(event)}
               />
               <span className="icon is-small is-left">
                 <i className="fas fa-lock" />

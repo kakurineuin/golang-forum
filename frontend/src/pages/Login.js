@@ -24,6 +24,11 @@ class Login extends Component {
     });
   }
 
+  passwordKeyPressHandler(event) {
+    if (event.key !== "Enter") return;
+    this.loginHandler(event);
+  }
+
   loginHandler(event) {
     event.preventDefault();
     this.props.onLogin(this.state.email, this.state.password);
@@ -37,6 +42,7 @@ class Login extends Component {
         <div className="column is-4" />
         <div className="column is-4">
           <div className="field">
+            <label className="label">Email</label>
             <p className="control has-icons-left">
               <input
                 className="input"
@@ -51,13 +57,15 @@ class Login extends Component {
             </p>
           </div>
           <div className="field">
+            <label className="label">密碼</label>
             <p className="control has-icons-left">
               <input
                 className="input"
                 type="password"
-                placeholder="Password"
+                placeholder="密碼"
                 value={this.state.password}
                 onChange={event => this.passwordChangeHandler(event)}
+                onKeyPress={event => this.passwordKeyPressHandler(event)}
               />
               <span className="icon is-small is-left">
                 <i className="fas fa-lock" />
