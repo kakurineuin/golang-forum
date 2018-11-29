@@ -1,0 +1,4 @@
+[database]
+user = "root"
+password = "kakurine"
+dbname = "forum_test"

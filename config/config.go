@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -9,9 +10,9 @@ import (
 var Viper viper.Viper
 
 // Init 初始化設定檔。
-func Init(configPath string) {
+func Init(configPath, configName string) {
 	Viper = *viper.New()
-	Viper.SetConfigName("config")
+	Viper.SetConfigName(configName)
 	Viper.AddConfigPath(configPath)
 	err := Viper.ReadInConfig()
 	if err != nil {

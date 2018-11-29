@@ -2,6 +2,9 @@ package auth_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/db/gorm"
@@ -11,8 +14,6 @@ import (
 	"github.com/labstack/gommon/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"testing"
-	"time"
 )
 
 var e *echo.Echo
@@ -24,7 +25,7 @@ func TestAuth(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	config.Init("../config")
+	config.Init("../../config", "config_test")
 
 	gorm.InitDB(
 		config.Viper.GetString("database.user"),

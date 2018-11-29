@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	config.Init("./config")
+	config.Init("./config", "config")
 
 	gorm.InitDB(
 		config.Viper.GetString("database.user"),

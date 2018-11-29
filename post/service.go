@@ -22,7 +22,7 @@ func init() {
 
 	switch directory {
 	case "post":
-		sqlTemplatePath = "../sql/template.xml"
+		sqlTemplatePath = "../../sql/template.xml"
 	case "golang-forum":
 		sqlTemplatePath = "sql/template.xml"
 	default:
