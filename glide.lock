@@ -1,5 +1,5 @@
-hash: a511ea189d55c5b8141e2cb95d1c3f1dc7329a9275a30e1c83c00d854ba8f760
-updated: 2018-11-25T12:33:06.3062452+08:00
+hash: 3dba5199da07eac9700a3d68d69d79793fbfe3fbb1ffa04abbe25e4d503c7dd7
+updated: 2018-11-29T10:48:06.119483247+08:00
 imports:
 - name: github.com/asaskevich/govalidator
   version: ccb8e960c48f04d6935e72476ae4a51028f9e22f
@@ -24,7 +24,7 @@ imports:
   - json/scanner
   - json/token
 - name: github.com/jinzhu/gorm
-  version: 6ed508ec6a4ecb3531899a69cbc746ccf65a4166
+  version: 472c70caa40267cb89fd8facb07fe6454b578626
   subpackages:
   - dialects/mysql
 - name: github.com/jinzhu/inflection
@@ -67,14 +67,14 @@ imports:
 - name: github.com/valyala/fasttemplate
   version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
 - name: golang.org/x/crypto
-  version: 3d3f9f413869b949e48070b5bc593aa22cc2b8f2
+  version: eb0de9b17e854e9b1ccd9963efafc79862359959
   subpackages:
   - acme
   - acme/autocert
   - bcrypt
   - blowfish
 - name: golang.org/x/sys
-  version: 62eef0e2fa9b2c385f7b2778e763486da6880d37
+  version: 4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31
   subpackages:
   - unix
 - name: golang.org/x/text
