@@ -7,6 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/kakurineuin/golang-forum/auth"
 
 	"github.com/beevik/etree"
 	"github.com/jinzhu/gorm"
@@ -53,18 +56,18 @@ func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Stat
 	// 查詢 golang 文章統計資料。
 	err = s.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
 
-	if err != nil {
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return Statistics{}, Statistics{}, err
 	}
 
 	// 查詢 Node.js 文章統計資料。
 	err = s.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
 
-	if err != nil {
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return Statistics{}, Statistics{}, err
 	}
 
-	return
+	return golangStatistics, nodeJSStatistics, nil
 }
 
 // FindTopics 查詢主題列表。
@@ -143,13 +146,63 @@ func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, 
 		return Post{}, err
 	}
 
+	// 不能修改已刪除的文章。
+	if post.DeletedAt != nil {
+		return Post{}, fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "不能修改已刪除的文章。",
+		}
+	}
+
 	// 不能修改別人的文章。
 	if *post.UserProfileID != userID {
-		return Post{}, fe.CustomError{http.StatusBadRequest, "不能修改別人的文章。"}
+		return Post{}, fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "不能修改別人的文章。",
+		}
 	}
 
 	// 修改文章。
 	post.Content = postOnUpdate.Content
+	err = s.DB.Table("post_" + category).Save(&post).Error
+
+	if err != nil {
+		return Post{}, err
+	}
+
+	return
+}
+
+// DeletePost 刪除文章，不是真的刪除，而是修改文章內容和刪除時間欄位。
+func (s Service) DeletePost(category string, id, userID int) (post Post, err error) {
+
+	// 查詢原本文章。
+	err = s.DB.Table("post_"+category).First(&post, id).Error
+
+	if err != nil {
+		return Post{}, err
+	}
+
+	user := auth.UserProfile{}
+	err = s.DB.First(&user, userID).Error
+
+	if err != nil {
+		return Post{}, err
+	}
+
+	// 不是系統管理員則不能刪除別人的文章。
+	if *user.Role != "admin" && *post.UserProfileID != userID {
+		return Post{}, fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "不能刪除別人的文章。",
+		}
+	}
+
+	// 不是真的刪除，而是修改文章內容並更新刪除時間欄位。
+	content := "此篇文章已被刪除。"
+	post.Content = &content
+	deleteAt := time.Now()
+	post.DeletedAt = &deleteAt
 	err = s.DB.Table("post_" + category).Save(&post).Error
 
 	if err != nil {

@@ -18,7 +18,9 @@ class Topic extends Component {
     postOnUpdate: {
       content: ""
     }, // 修改的文章。
-    updatePostModalActivate: false // 是否顯示修改文章對話框。
+    updatePostModalActivate: false, // 是否顯示修改文章對話框。
+    postOnDelete: {}, // 刪除的文章。
+    deletePostModalActivate: false // 是否顯示刪除文章對話框。
   };
 
   // 新增回覆內文。
@@ -61,6 +63,26 @@ class Topic extends Component {
       });
   }
 
+  // 開啟修改文章對話框。
+  openUpdatePostModal(post) {
+    this.setState(
+      produce(draft => {
+        draft.postOnUpdate = Object.assign({}, post);
+        draft.updatePostModalActivate = true;
+      })
+    );
+  }
+
+  // 關閉修改文章對話框。
+  closeUpdatePostModal() {
+    this.setState(
+      produce(draft => {
+        draft.postOnUpdate = { content: "" };
+        draft.updatePostModalActivate = false;
+      })
+    );
+  }
+
   // 修改文章。
   updatePostHandler() {
     console.log("props", this.props);
@@ -74,17 +96,59 @@ class Topic extends Component {
       .then(response => {
         console.log("update post response", response);
         const updatedPost = response.data.post;
-
         this.setState(
           produce(draft => {
-            const post = draft.posts.find(post => post.id === updatedPost.id);
-            post.content = updatedPost.content;
-            post.updatedAt = updatedPost.updatedAt;
+            const index = draft.posts.findIndex(
+              post => post.id === updatedPost.id
+            );
+            draft.posts[index] = Object.assign(draft.posts[index], updatedPost);
             draft.postOnUpdate = { content: "" };
             draft.updatePostModalActivate = false;
           })
         );
       });
+  }
+
+  // 開啟刪除文章對話框。
+  openDeletePostModal(post) {
+    this.setState(
+      produce(draft => {
+        draft.postOnDelete = Object.assign({}, post);
+        draft.deletePostModalActivate = true;
+      })
+    );
+  }
+
+  // 關閉刪除文章對話框。
+  closeDeletePostModal() {
+    this.setState(
+      produce(draft => {
+        draft.postOnDelete = {};
+        draft.deletePostModalActivate = false;
+      })
+    );
+  }
+
+  // 刪除文章。
+  deletePostHandler() {
+    console.log("props", this.props);
+    console.log("state", this.state);
+    const category = this.props.match.params.category;
+    const postID = this.state.postOnDelete.id;
+    axios.delete(`/api/topics/${category}/${postID}`).then(response => {
+      console.log("delete post response", response);
+      const deletedPost = response.data.post;
+      this.setState(
+        produce(draft => {
+          const index = draft.posts.findIndex(
+            post => post.id === deletedPost.id
+          );
+          draft.posts[index] = Object.assign(draft.posts[index], deletedPost);
+          draft.postOnDelete = {};
+          draft.deletePostModalActivate = false;
+        })
+      );
+    });
   }
 
   // 查詢此主題文章。
@@ -107,24 +171,6 @@ class Topic extends Component {
           })
         );
       });
-  }
-
-  openUpdatePostModal(post) {
-    this.setState(
-      produce(draft => {
-        draft.postOnUpdate = Object.assign({}, post);
-        draft.updatePostModalActivate = true;
-      })
-    );
-  }
-
-  closeUpdatePostModal() {
-    this.setState(
-      produce(draft => {
-        draft.postOnUpdate = { content: "" };
-        draft.updatePostModalActivate = false;
-      })
-    );
   }
 
   render() {
@@ -159,8 +205,11 @@ class Topic extends Component {
     const postID = parseInt(this.props.match.params.id, 10);
     const posts = this.state.posts.map((post, index) => {
       let updateButton = null;
+      let deleteButton = null;
+      const user = this.props.user;
 
-      if (this.props.user && post.username === this.props.user.username) {
+      // 只能修改自己的文章。
+      if (!post.deletedAt && user && post.username === user.username) {
         updateButton = (
           <button
             className="button is-primary"
@@ -171,7 +220,34 @@ class Topic extends Component {
         );
       }
 
+      // 只能刪除自己的文章，而系統管理員可以刪除每個人的文章。
+      if (
+        !post.deletedAt &&
+        user &&
+        (post.username === user.username || user.role === "admin")
+      ) {
+        deleteButton = (
+          <button
+            className="button"
+            onClick={event => this.openDeletePostModal(post)}
+          >
+            刪除
+          </button>
+        );
+      }
+
       let content = null;
+      let postContent = post.content;
+
+      // 若文章已刪除。
+      if (post.deletedAt) {
+        // 刪除時間。
+        const deletedAt = dateFns.format(
+          new Date(post.deletedAt),
+          "YYYY/MM/DD HH:mm:ss"
+        );
+        postContent = deletedAt + " - " + postContent;
+      }
 
       // 若是主題文章，顯示主題。
       content = (
@@ -185,10 +261,11 @@ class Topic extends Component {
           <div className="ql-snow">
             <div
               className="ql-editor"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: postContent }}
             />
           </div>
           {updateButton}
+          {deleteButton}
         </td>
       );
 
@@ -263,13 +340,45 @@ class Topic extends Component {
             <footer class="modal-card-foot">
               <button
                 class="button is-primary"
-                onClick={event => this.updatePostHandler(postID)}
+                onClick={event => this.updatePostHandler()}
               >
                 確定
               </button>
               <button
                 class="button"
                 onClick={event => this.closeUpdatePostModal()}
+              >
+                取消
+              </button>
+            </footer>
+          </div>
+        </div>
+        <div
+          class={
+            this.state.deletePostModalActivate ? "modal is-active" : "modal"
+          }
+        >
+          <div class="modal-background" />
+          <div class="modal-card">
+            <header class="modal-card-head">
+              <p class="modal-card-title">刪除文章</p>
+              <button
+                class="delete"
+                aria-label="close"
+                onClick={event => this.closeDeletePostModal()}
+              />
+            </header>
+            <section class="modal-card-body">確定刪除文章？</section>
+            <footer class="modal-card-foot">
+              <button
+                class="button is-primary"
+                onClick={event => this.deletePostHandler()}
+              >
+                確定
+              </button>
+              <button
+                class="button"
+                onClick={event => this.closeDeletePostModal()}
               >
                 取消
               </button>

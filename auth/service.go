@@ -1,10 +1,11 @@
 package auth
 
 import (
-	fe "github.com/kakurineuin/golang-forum/error"
-	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
+
+	"github.com/jinzhu/gorm"
+	fe "github.com/kakurineuin/golang-forum/error"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // roleUser 表示角色是一般使用者。
@@ -28,7 +29,10 @@ func (s Service) Register(userProfile *UserProfile) (err error) {
 	}
 
 	if count > 0 {
-		return fe.CustomError{http.StatusBadRequest, "此使用者名稱已被使用。"}
+		return fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "此使用者名稱已被使用。",
+		}
 	}
 
 	if err = s.DB.Table("user_profile").
@@ -38,7 +42,10 @@ func (s Service) Register(userProfile *UserProfile) (err error) {
 	}
 
 	if count > 0 {
-		return fe.CustomError{http.StatusBadRequest, "此 email 已被使用。"}
+		return fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "此 email 已被使用。",
+		}
 	}
 
 	// 加密密碼。
@@ -62,7 +69,10 @@ func (s Service) Login(loginRequest LoginRequest) (userProfile UserProfile, err 
 	// 查詢帳號。
 	if err = s.DB.Where("email = ?", loginRequest.Email).First(&userProfile).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return UserProfile{}, fe.CustomError{http.StatusNotFound, "查無此 email 帳號。"}
+			return UserProfile{}, fe.CustomError{
+				HTTPStatusCode: http.StatusNotFound,
+				Message:        "查無此 email 帳號。",
+			}
 		}
 
 		return UserProfile{}, err
@@ -71,7 +81,10 @@ func (s Service) Login(loginRequest LoginRequest) (userProfile UserProfile, err 
 	// 核對密碼。
 	err = bcrypt.CompareHashAndPassword([]byte(*userProfile.Password), []byte(*loginRequest.Password))
 	if err != nil {
-		return UserProfile{}, fe.CustomError{http.StatusBadRequest, "密碼錯誤。"}
+		return UserProfile{}, fe.CustomError{
+			HTTPStatusCode: http.StatusBadRequest,
+			Message:        "密碼錯誤。",
+		}
 	}
 
 	return

@@ -157,6 +157,26 @@ func (h Handler) UpdatePost(c echo.Context) (err error) {
 	})
 }
 
+// DeletePost 刪除文章。
+func (h Handler) DeletePost(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return
+	}
+
+	post, err := h.Service.DeletePost(c.Param("category"), id, getUserID(c))
+
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "刪除文章成功。",
+		"post":    post,
+	})
+}
+
 func getUserID(c echo.Context) int {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)

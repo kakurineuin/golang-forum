@@ -58,14 +58,14 @@
   </Sql>
   <Sql name="FindTopic">
     select
-  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.username, u.role
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, p.deleted_at, u.username, u.role
   	from %v p
   		inner join user_profile u
   			on p.user_profile_id = u.id
   	where p.id = ? and p.reply_post_id is null
   	union all
   	select
-  		p.id, p.topic, p.content, p.created_at, p.updated_at, u.username, u.role
+  		p.id, p.topic, p.content, p.created_at, p.updated_at, p.deleted_at, u.username, u.role
   	from %v p
   		inner join user_profile u
   			on p.user_profile_id = u.id

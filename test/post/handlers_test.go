@@ -78,7 +78,7 @@ var _ = Describe("Post Handlers", func() {
 		gorm.DB.Delete(auth.UserProfile{})
 
 		for _, table := range []string{"post_golang", "post_nodejs"} {
-			gorm.DB.Table(table).Delete(post.Post{})
+			gorm.DB.Table(table).Unscoped().Delete(post.Post{})
 		}
 	})
 
@@ -207,6 +207,7 @@ var _ = Describe("Post Handlers", func() {
 					"Content":       PointTo(Equal("測試新增文章")),
 					"CreatedAt":     Not(BeNil()),
 					"UpdatedAt":     Not(BeNil()),
+					"DeletedAt":     BeNil(),
 				}),
 			}))
 		})
@@ -246,6 +247,43 @@ var _ = Describe("Post Handlers", func() {
 					"Content":       PointTo(Equal("測試修改文章")),
 					"CreatedAt":     Not(BeNil()),
 					"UpdatedAt":     Not(BeNil()),
+					"DeletedAt":     BeNil(),
+				}),
+			}))
+		})
+	})
+
+	Describe("Delete post", func() {
+		It("should delete successfully", func() {
+			id := strconv.Itoa(*postGolang1.ID)
+			req := httptest.NewRequest(http.MethodDelete, "/topics/golang/"+id, nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetParamNames("category", "id")
+			c.SetParamValues("golang", id)
+			c.Set("user", createToken(userProfileID))
+			err := handler.DeletePost(c)
+
+			Expect(err).To(BeNil())
+			Expect(rec.Code).To(Equal(http.StatusOK))
+
+			recBody := rec.Body.String()
+			var result struct {
+				Post post.Post `json:"post"`
+			}
+			err = json.Unmarshal([]byte(recBody), &result)
+
+			Expect(err).To(BeNil())
+			Expect(result).To(MatchAllFields(Fields{
+				"Post": MatchAllFields(Fields{
+					"ID":            PointTo(BeNumerically("==", *postGolang1.ID)),
+					"UserProfileID": PointTo(BeNumerically("==", *postGolang1.UserProfileID)),
+					"ReplyPostID":   BeNil(),
+					"Topic":         PointTo(Equal(*postGolang1.Topic)),
+					"Content":       PointTo(Equal("此篇文章已被刪除。")),
+					"CreatedAt":     Not(BeNil()),
+					"UpdatedAt":     Not(BeNil()),
+					"DeletedAt":     Not(BeNil()),
 				}),
 			}))
 		})
