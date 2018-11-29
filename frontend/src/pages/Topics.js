@@ -50,6 +50,8 @@ class Topics extends Component {
           produce(draft => {
             draft.topic = "";
             draft.content = "";
+            draft.inputSearchTopic = "";
+            draft.searchTopic = "";
             draft.paginationKey = Math.random(); // 觸發分頁重新查詢。
           })
         );
