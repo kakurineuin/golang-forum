@@ -1,4 +1,4 @@
 [database]
-user = "root"
-password = "kakurine"
+user = "forum_admin"
+password = "test123"
 dbname = "forum_test"
