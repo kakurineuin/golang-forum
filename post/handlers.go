@@ -13,6 +13,19 @@ type Handler struct {
 	Service *Service
 }
 
+// FindForumStatistics 查詢論壇統計資料。
+func (h Handler) FindForumStatistics(c echo.Context) (err error) {
+	forumStatistics, err := h.Service.FindForumStatistics()
+
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"forumStatistics": forumStatistics,
+	})
+}
+
 // FindTopicsStatistics 查詢主題統計資料。
 func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 	golangStatistics, nodeJSStatistics, err := h.Service.FindTopicsStatistics()

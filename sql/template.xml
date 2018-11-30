@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Sqls>
+  <Sql name="FindForumStatistics">
+    select
+      (select count(*) from post_golang where reply_post_id is null) 
+          + (select count(*) from post_nodejs where reply_post_id is null) as topic_count, 
+      (select count(*) from post_golang where reply_post_id is not null) 
+          + (select count(*) from post_nodejs where reply_post_id is not null) as reply_count, 
+      (select count(*) from user_profile) as user_count
+  </Sql>
   <Sql name="FindTopicsGolangStatistics">
     select
   		(select count(*) from post_golang where reply_post_id is null) as topic_count,

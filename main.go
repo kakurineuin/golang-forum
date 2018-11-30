@@ -69,5 +69,8 @@ func main() {
 	postsGroup.PUT("/:category/:id", postHandler.UpdatePost, jwtMiddleware)
 	postsGroup.DELETE("/:category/:id", postHandler.DeletePost, jwtMiddleware)
 
+	// 查詢論壇統計資料。
+	apiGroup.GET("/forum/statistics", postHandler.FindForumStatistics)
+
 	e.Logger.Fatal(e.Start(":1323"))
 }

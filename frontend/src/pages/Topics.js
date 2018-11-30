@@ -189,10 +189,10 @@ class Topics extends Component {
 
     if (this.state.searchTopic) {
       tagSearchTopic = (
-        <span class="tag is-medium">
+        <span className="tag is-medium">
           {this.state.searchTopic}
           <button
-            class="delete is-small"
+            className="delete is-small"
             onClick={event => this.deleteTagHandler()}
           />
         </span>

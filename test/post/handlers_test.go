@@ -82,6 +82,33 @@ var _ = Describe("Post Handlers", func() {
 		}
 	})
 
+	Describe("Find forum statistics", func() {
+		It("should find successfully", func() {
+			req := httptest.NewRequest(http.MethodGet, "/forum/statistics", nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			err := handler.FindForumStatistics(c)
+
+			Expect(err).To(BeNil())
+			Expect(rec.Code).To(Equal(http.StatusOK))
+
+			recBody := rec.Body.String()
+			var result struct {
+				post.ForumStatistics `json:"forumStatistics"`
+			}
+			err = json.Unmarshal([]byte(recBody), &result)
+
+			Expect(err).To(BeNil())
+			Expect(result).To(MatchAllFields(Fields{
+				"ForumStatistics": MatchAllFields(Fields{
+					"TopicCount": BeNumerically("==", 2),
+					"ReplyCount": BeNumerically("==", 2),
+					"UserCount":  BeNumerically("==", 1),
+				}),
+			}))
+		})
+	})
+
 	Describe("Find topics statistics", func() {
 		It("should find successfully", func() {
 			req := httptest.NewRequest(http.MethodGet, "/topics/statistics", nil)

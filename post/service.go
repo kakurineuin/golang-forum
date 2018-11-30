@@ -50,6 +50,17 @@ type Service struct {
 	DB *gorm.DB
 }
 
+// FindForumStatistics 查詢論壇統計資料。
+func (s Service) FindForumStatistics() (forumStatistics ForumStatistics, err error) {
+	err = s.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
+
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return ForumStatistics{}, err
+	}
+
+	return forumStatistics, nil
+}
+
 // FindTopicsStatistics 查詢主題統計資料。
 func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Statistics, err error) {
 

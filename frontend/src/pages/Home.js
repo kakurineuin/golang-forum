@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import dateFns from "date-fns";
 import axios from "axios";
 import produce from "immer";
+import ForumStatistics from "../components/ForumStatistics";
 
 /**
   首頁。
@@ -94,10 +95,7 @@ class Home extends Component {
           </table>
         </div>
         <div className="column is-3">
-          <nav className="panel">
-            <p className="panel-heading">TODO: 待實作。</p>
-            <div className="panel-block" />
-          </nav>
+          <ForumStatistics />
         </div>
       </div>
     );

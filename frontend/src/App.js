@@ -117,6 +117,7 @@ class App extends Component {
 
         {notifications}
 
+        <br />
         <div className="columns">
           <div className="column is-12">
             <Switch>

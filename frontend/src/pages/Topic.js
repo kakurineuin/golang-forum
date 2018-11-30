@@ -315,21 +315,21 @@ class Topic extends Component {
         <br />
         {createReply}
         <div
-          class={
+          className={
             this.state.updatePostModalActivate ? "modal is-active" : "modal"
           }
         >
-          <div class="modal-background" />
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">修改文章</p>
+          <div className="modal-background" />
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p className="modal-card-title">修改文章</p>
               <button
-                class="delete"
+                className="delete"
                 aria-label="close"
                 onClick={event => this.closeUpdatePostModal()}
               />
             </header>
-            <section class="modal-card-body">
+            <section className="modal-card-body">
               <PostEditor
                 value={
                   this.state.postOnUpdate ? this.state.postOnUpdate.content : ""
@@ -337,15 +337,15 @@ class Topic extends Component {
                 changed={value => this.postOnUpdateChangeHandler(value)}
               />
             </section>
-            <footer class="modal-card-foot">
+            <footer className="modal-card-foot">
               <button
-                class="button is-primary"
+                className="button is-primary"
                 onClick={event => this.updatePostHandler()}
               >
                 確定
               </button>
               <button
-                class="button"
+                className="button"
                 onClick={event => this.closeUpdatePostModal()}
               >
                 取消
@@ -354,30 +354,30 @@ class Topic extends Component {
           </div>
         </div>
         <div
-          class={
+          className={
             this.state.deletePostModalActivate ? "modal is-active" : "modal"
           }
         >
-          <div class="modal-background" />
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">刪除文章</p>
+          <div className="modal-background" />
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p className="modal-card-title">刪除文章</p>
               <button
-                class="delete"
+                className="delete"
                 aria-label="close"
                 onClick={event => this.closeDeletePostModal()}
               />
             </header>
-            <section class="modal-card-body">確定刪除文章？</section>
-            <footer class="modal-card-foot">
+            <section className="modal-card-body">確定刪除文章？</section>
+            <footer className="modal-card-foot">
               <button
-                class="button is-primary"
+                className="button is-primary"
                 onClick={event => this.deletePostHandler()}
               >
                 確定
               </button>
               <button
-                class="button"
+                className="button"
                 onClick={event => this.closeDeletePostModal()}
               >
                 取消
