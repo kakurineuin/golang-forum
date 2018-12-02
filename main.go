@@ -5,6 +5,7 @@ import (
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/db/gorm"
 	fe "github.com/kakurineuin/golang-forum/error"
+	"github.com/kakurineuin/golang-forum/logger"
 	"github.com/kakurineuin/golang-forum/post"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
@@ -37,10 +38,14 @@ func main() {
 
 	validator := validator.InitValidator()
 	e.Validator = &validator
+
+	// Logger
+	myLogger := logger.InitLogger()
+	e.Logger = myLogger
 	e.Logger.SetLevel(log.INFO)
 
 	// Middleware
-	e.Use(middleware.Logger())
+	e.Use(logger.Middleware(myLogger))
 	e.Use(middleware.Recover())
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:   "frontend/build",

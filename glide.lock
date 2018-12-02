@@ -1,5 +1,5 @@
-hash: 3dba5199da07eac9700a3d68d69d79793fbfe3fbb1ffa04abbe25e4d503c7dd7
-updated: 2018-11-29T10:48:06.119483247+08:00
+hash: 192a3dd6eb6a9394333f4a25d12b1eb35169620071a3df2f573a5a3d0e12750e
+updated: 2018-12-02T14:02:22.112252618+08:00
 imports:
 - name: github.com/asaskevich/govalidator
   version: ccb8e960c48f04d6935e72476ae4a51028f9e22f
@@ -29,6 +29,8 @@ imports:
   - dialects/mysql
 - name: github.com/jinzhu/inflection
   version: 04140366298a54a039076d798123ffa108fff46c
+- name: github.com/konsorten/go-windows-terminal-sequences
+  version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
 - name: github.com/labstack/echo
   version: c7eb8da9ec73e78c4f38413f3f835e0cd52c7d72
   subpackages:
@@ -40,6 +42,12 @@ imports:
   - color
   - log
   - random
+- name: github.com/lestrrat-go/file-rotatelogs
+  version: 3b4f34a036f374c18d604e1b8006d9fbb9593c06
+  subpackages:
+  - internal/option
+- name: github.com/lestrrat-go/strftime
+  version: 8b31f9c59b0feb56c456ce49a7b3d2b2e93a6f18
 - name: github.com/magiconair/properties
   version: 7c38529aac7222391b7a2661365177a97e21b998
 - name: github.com/mattn/go-colorable
@@ -48,8 +56,18 @@ imports:
   version: 3fb116b820352b7f0c281308a4d6250c22d94e27
 - name: github.com/mitchellh/mapstructure
   version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
+- name: github.com/neko-neko/echo-logrus
+  version: 2c9e6b78096fc31209eedb02c7dcf03dbc3a09a2
+  subpackages:
+  - log
 - name: github.com/pelletier/go-toml
   version: 27c6b39a135b7dc87a14afb068809132fb7a9a8f
+- name: github.com/pkg/errors
+  version: 059132a15dd08d6704c67711dae0cf35ab991756
+- name: github.com/rifflock/lfshook
+  version: b9218ef580f59a2e72dad1aa33d660150445d05a
+- name: github.com/sirupsen/logrus
+  version: bcd833dfe83d3cebad139e4a29ed79cb2318bf95
 - name: github.com/spf13/afero
   version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
   subpackages:
@@ -73,10 +91,12 @@ imports:
   - acme/autocert
   - bcrypt
   - blowfish
+  - ssh/terminal
 - name: golang.org/x/sys
   version: 4ed8d59d0b35e1e29334a206d1b3f38b1e5dfb31
   subpackages:
   - unix
+  - windows
 - name: golang.org/x/text
   version: 6f44c5a2ea40ee3593d98cdcc905cc1fdaa660e2
   subpackages:
@@ -103,7 +123,7 @@ imports:
   subpackages:
   - cloudsql
 - name: gopkg.in/yaml.v2
-  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
+  version: 51d6538a90f86fe93ac480b35f37b2be17fef232
 testImports:
 - name: github.com/hpcloud/tail
   version: a1dbeea552b7c8df4b542c66073e393de198a800
@@ -136,6 +156,8 @@ testImports:
   version: 65fb64232476ad9046e57c26cd0bff3d3a8dc6cd
   subpackages:
   - format
+  - gstruct
+  - gstruct/errors
   - internal/assertion
   - internal/asyncassertion
   - internal/oraclematcher
@@ -147,7 +169,7 @@ testImports:
   - matchers/support/goraph/util
   - types
 - name: golang.org/x/net
-  version: adae6a3d119ae4890b46832a2e88a95adc62b8e7
+  version: 351d144fa1fc0bd934e2408202be0c29f25e35a0
   subpackages:
   - html
   - html/atom
