@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Topics from "./pages/Topics";
 import Topic from "./pages/Topic";
+import Admin from "./pages/Admin";
 import * as authActions from "./modules/auth";
 import * as messageActions from "./modules/message";
 import "./App.css";
@@ -107,6 +108,11 @@ class App extends Component {
               <Link to="/" className="navbar-item">
                 Home
               </Link>
+              {this.props.user && this.props.user.role === "admin" ? (
+                <Link to="/admin" className="navbar-item">
+                  Admin
+                </Link>
+              ) : null}
             </div>
             <div className="navbar-end">
               {myConfigs}
@@ -125,6 +131,9 @@ class App extends Component {
               <Route path="/login" component={Login} />
               <Route path="/topics/:category/:id" component={Topic} />
               <Route path="/topics/:category" component={Topics} />
+              {this.props.user && this.props.user.role === "admin" ? (
+                <Route path="/admin" component={Admin} />
+              ) : null}
               <Route path="/" exact component={Home} />
               <Redirect to="/" />
             </Switch>

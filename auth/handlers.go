@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo"
 	"net/http"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 )
 
 // JwtSecret JWT secret key。
@@ -70,6 +71,7 @@ func createToken(userProfile UserProfile) (string, int64, error) {
 	claims["id"] = userProfile.ID
 	claims["username"] = userProfile.Username
 	claims["email"] = userProfile.Email
+	claims["role"] = userProfile.Role
 	claims["exp"] = exp
 
 	// Generate encoded token.

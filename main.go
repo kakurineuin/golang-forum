@@ -1,11 +1,13 @@
 package main
 
 import (
+	"github.com/kakurineuin/golang-forum/admin"
 	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/db/gorm"
-	fe "github.com/kakurineuin/golang-forum/error"
+	forumError "github.com/kakurineuin/golang-forum/error"
 	"github.com/kakurineuin/golang-forum/logger"
+	forumMiddleware "github.com/kakurineuin/golang-forum/middleware"
 	"github.com/kakurineuin/golang-forum/post"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
@@ -26,7 +28,7 @@ func main() {
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		c.Logger().Error(err)
 
-		if customError, ok := err.(fe.CustomError); ok {
+		if customError, ok := err.(forumError.CustomError); ok {
 			c.JSON(customError.HTTPStatusCode, map[string]interface{}{
 				"message": customError.Message,
 			})
@@ -76,6 +78,11 @@ func main() {
 
 	// 查詢論壇統計資料。
 	apiGroup.GET("/forum/statistics", postHandler.FindForumStatistics)
+
+	// Admin
+	adminService := admin.Service{DB: gorm.DB}
+	adminHandler := admin.Handler{Service: &adminService}
+	apiGroup.GET("/users", adminHandler.FindUsers, jwtMiddleware, forumMiddleware.Admin)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
