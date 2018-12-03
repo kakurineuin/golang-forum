@@ -123,7 +123,7 @@ class Admin extends Component {
                 this.inputSearchUserChangeHandler(event.target.value)
               }
               onKeyPress={event => this.inputSearchUserKeyPressHandler(event)}
-              placeholder="搜尋使用者"
+              placeholder="搜尋使用者名稱"
             />
           </div>
           <div className="control">
