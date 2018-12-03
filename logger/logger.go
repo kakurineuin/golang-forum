@@ -41,6 +41,7 @@ func InitLogger() *Logger {
 	}, &logrus.JSONFormatter{})
 	log := logrus.New()
 	log.AddHook(lfHook)
+	log.SetReportCaller(true) // 記錄檔名和行數。
 	logger := Logger{
 		Logger: log,
 	}
