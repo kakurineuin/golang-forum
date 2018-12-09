@@ -173,6 +173,10 @@ class Topic extends Component {
       });
   }
 
+  goBackHandler() {
+    this.props.history.goBack();
+  }
+
   render() {
     let createReply = null;
 
@@ -313,6 +317,21 @@ class Topic extends Component {
           findData={(offset, limit) => this.findPostsByTopicID(offset, limit)}
         />
         <br />
+        <nav className="level">
+          <div className="level-left">
+            <div className="level-item" />
+          </div>
+          <div className="level-right">
+            <div className="level-item">
+              <button
+                className="button"
+                onClick={event => this.goBackHandler()}
+              >
+                回上一頁
+              </button>
+            </div>
+          </div>
+        </nav>
         {createReply}
         <div
           className={
