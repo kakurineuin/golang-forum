@@ -39,3 +39,23 @@ func (h Handler) FindUsers(c echo.Context) (err error) {
 		"totalCount": totalCount,
 	})
 }
+
+// DisableUser 停用使用者。
+func (h Handler) DisableUser(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return
+	}
+
+	user, err := h.Service.DisableUser(id)
+
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "停用使用者成功。",
+		"user":    user,
+	})
+}

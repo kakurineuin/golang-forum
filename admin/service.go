@@ -43,3 +43,22 @@ func (s Service) FindUsers(searchUser string, offset, limit int) (users []User, 
 
 	return users, totalCount, nil
 }
+
+// DisableUser 停用使用者。
+func (s Service) DisableUser(id int) (user User, err error) {
+	err = s.DAO.WithinTransaction(func(tx *gorm.DB) error {
+		return tx.Table("user_profile").Where("id = ?", id).Update("is_disabled", 1).Error
+	})
+
+	if err != nil {
+		return User{}, err
+	}
+
+	err = s.DAO.DB.Table("user_profile").First(&user, id).Error
+
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}

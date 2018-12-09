@@ -326,5 +326,6 @@ func createToken(userProfileID int) *jwt.Token {
 	claims["username"] = "admin"
 	claims["email"] = "admin@xxx.com"
 	claims["exp"] = exp
+	claims["role"] = "admin"
 	return token
 }

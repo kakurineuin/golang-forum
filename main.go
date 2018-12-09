@@ -82,7 +82,10 @@ func main() {
 	// Admin
 	adminService := admin.Service{DAO: dao}
 	adminHandler := admin.Handler{Service: &adminService}
-	apiGroup.GET("/users", adminHandler.FindUsers, jwtMiddleware, forumMiddleware.Admin)
+	adminGroup := apiGroup.Group("/users")
+	adminGroup.Use(jwtMiddleware, forumMiddleware.Admin)
+	adminGroup.GET("", adminHandler.FindUsers)
+	adminGroup.POST("/disable/:id", adminHandler.DisableUser)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

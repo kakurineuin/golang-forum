@@ -61,6 +61,8 @@ func (s Service) Register(userProfile *UserProfile) (err error) {
 	userProfile.Password = &hashString
 	role := roleUser
 	userProfile.Role = &role
+	isDisabled := 0
+	userProfile.IsDisabled = &isDisabled
 
 	return s.DAO.WithinTransaction(func(tx *gorm.DB) error {
 		return tx.Create(userProfile).Error
@@ -80,6 +82,13 @@ func (s Service) Login(loginRequest LoginRequest) (userProfile UserProfile, err 
 		}
 
 		return UserProfile{}, err
+	}
+
+	if *userProfile.IsDisabled == 1 {
+		return UserProfile{}, fe.CustomError{
+			HTTPStatusCode: http.StatusForbidden,
+			Message:        "此帳號已被停用。",
+		}
 	}
 
 	// 核對密碼。

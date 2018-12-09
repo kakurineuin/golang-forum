@@ -46,13 +46,14 @@ var _ = Describe("Auth Handler", func() {
 				"Token": Not(BeEmpty()),
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
-					"ID":        PointTo(BeNumerically(">=", 0)),
-					"Username":  PointTo(Not(BeEmpty())),
-					"Email":     PointTo(Not(BeEmpty())),
-					"Password":  BeNil(), // 密碼不能傳到前端。
-					"Role":      PointTo(Equal("user")),
-					"CreatedAt": Not(BeNil()),
-					"UpdatedAt": Not(BeNil()),
+					"ID":         PointTo(BeNumerically(">=", 0)),
+					"Username":   PointTo(Not(BeEmpty())),
+					"Email":      PointTo(Not(BeEmpty())),
+					"Password":   BeNil(), // 密碼不能傳到前端。
+					"Role":       PointTo(Equal("user")),
+					"IsDisabled": PointTo(BeNumerically("==", 0)),
+					"CreatedAt":  Not(BeNil()),
+					"UpdatedAt":  Not(BeNil()),
 				}),
 			}))
 		})
@@ -64,11 +65,13 @@ var _ = Describe("Auth Handler", func() {
 			email := "test001@xxx.com"
 			password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
 			role := "user"
+			isDisabled := 0
 			test001 := auth.UserProfile{
-				Username: &username,
-				Email:    &email,
-				Password: &password,
-				Role:     &role,
+				Username:   &username,
+				Email:      &email,
+				Password:   &password,
+				Role:       &role,
+				IsDisabled: &isDisabled,
 			}
 
 			if err := dao.DB.Table("user_profile").Create(&test001).Error; err != nil {
@@ -105,13 +108,14 @@ var _ = Describe("Auth Handler", func() {
 				"Token": Not(BeEmpty()),
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
-					"ID":        PointTo(BeNumerically(">=", 0)),
-					"Username":  PointTo(Not(BeEmpty())),
-					"Email":     PointTo(Not(BeEmpty())),
-					"Password":  BeNil(), // 密碼不能傳到前端。
-					"Role":      PointTo(Equal("user")),
-					"CreatedAt": Not(BeNil()),
-					"UpdatedAt": Not(BeNil()),
+					"ID":         PointTo(BeNumerically(">=", 0)),
+					"Username":   PointTo(Not(BeEmpty())),
+					"Email":      PointTo(Not(BeEmpty())),
+					"Password":   BeNil(), // 密碼不能傳到前端。
+					"Role":       PointTo(Equal("user")),
+					"IsDisabled": PointTo(BeNumerically("==", 0)),
+					"CreatedAt":  Not(BeNil()),
+					"UpdatedAt":  Not(BeNil()),
 				}),
 			}))
 		})
