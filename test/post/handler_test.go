@@ -10,7 +10,6 @@ import (
 
 	"github.com/kakurineuin/golang-forum/auth"
 
-	"github.com/kakurineuin/golang-forum/db/gorm"
 	"github.com/kakurineuin/golang-forum/post"
 	"github.com/labstack/echo"
 
@@ -37,7 +36,7 @@ var _ = Describe("Post Handler", func() {
 			Role:     &role,
 		}
 
-		if err := gorm.DB.Create(&user1).Error; err != nil {
+		if err := dao.DB.Create(&user1).Error; err != nil {
 			panic(err)
 		}
 
@@ -53,7 +52,7 @@ var _ = Describe("Post Handler", func() {
 				Content:       &content,
 			}
 
-			if err := gorm.DB.Table(table).Create(&post1).Error; err != nil {
+			if err := dao.DB.Table(table).Create(&post1).Error; err != nil {
 				panic(err)
 			}
 
@@ -68,17 +67,17 @@ var _ = Describe("Post Handler", func() {
 				Content:       &content,
 			}
 
-			if err := gorm.DB.Table(table).Create(&reply1).Error; err != nil {
+			if err := dao.DB.Table(table).Create(&reply1).Error; err != nil {
 				panic(err)
 			}
 		}
 	})
 
 	AfterEach(func() {
-		gorm.DB.Delete(auth.UserProfile{})
+		dao.DB.Delete(auth.UserProfile{})
 
 		for _, table := range []string{"post_golang", "post_nodejs"} {
-			gorm.DB.Table(table).Unscoped().Delete(post.Post{})
+			dao.DB.Table(table).Unscoped().Delete(post.Post{})
 		}
 	})
 

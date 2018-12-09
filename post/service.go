@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kakurineuin/golang-forum/database"
+
 	"github.com/kakurineuin/golang-forum/auth"
 
 	"github.com/beevik/etree"
@@ -47,12 +49,12 @@ func init() {
 
 // Service 處理請求的 Service。
 type Service struct {
-	DB *gorm.DB
+	DAO *database.DAO
 }
 
 // FindForumStatistics 查詢論壇統計資料。
 func (s Service) FindForumStatistics() (forumStatistics ForumStatistics, err error) {
-	err = s.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
+	err = s.DAO.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return ForumStatistics{}, err
@@ -65,14 +67,14 @@ func (s Service) FindForumStatistics() (forumStatistics ForumStatistics, err err
 func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Statistics, err error) {
 
 	// 查詢 golang 文章統計資料。
-	err = s.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
+	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return Statistics{}, Statistics{}, err
 	}
 
 	// 查詢 Node.js 文章統計資料。
-	err = s.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
+	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return Statistics{}, Statistics{}, err
@@ -93,7 +95,7 @@ func (s Service) FindTopics(category, searchTopic string, offset, limit int) (to
 	}
 
 	sql := fmt.Sprintf(sqlTemplate["FindTopics"], table, table)
-	rows, err := s.DB.Raw(sql, searchTopic, offset, limit).Rows()
+	rows, err := s.DAO.DB.Raw(sql, searchTopic, offset, limit).Rows()
 	defer rows.Close()
 
 	if err != nil {
@@ -102,20 +104,22 @@ func (s Service) FindTopics(category, searchTopic string, offset, limit int) (to
 
 	for rows.Next() {
 		var topic Topic
-		s.DB.ScanRows(rows, &topic)
+		s.DAO.DB.ScanRows(rows, &topic)
 		topics = append(topics, topic)
 	}
 
 	// 查詢總筆數。
 	sql = fmt.Sprintf(sqlTemplate["FindTopicsTotalCount"], table, table)
-	row := s.DB.Raw(sql, searchTopic).Row()
+	row := s.DAO.DB.Raw(sql, searchTopic).Row()
 	row.Scan(&totalCount)
 	return
 }
 
 // CreatePost 新增文章。
 func (s Service) CreatePost(category string, post *Post) (err error) {
-	return s.DB.Table("post_" + category).Create(post).Error
+	return s.DAO.WithinTransaction(func(tx *gorm.DB) error {
+		return tx.Table("post_" + category).Create(post).Error
+	})
 }
 
 // FindTopic 查詢某個主題的討論文章。
@@ -127,7 +131,7 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 	}
 
 	sql := fmt.Sprintf(sqlTemplate["FindTopic"], table, table)
-	rows, err := s.DB.Raw(sql, id, id, offset, limit).Rows()
+	rows, err := s.DAO.DB.Raw(sql, id, id, offset, limit).Rows()
 	defer rows.Close()
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -136,13 +140,13 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 
 	for rows.Next() {
 		var findPostsResult FindPostsResult
-		s.DB.ScanRows(rows, &findPostsResult)
+		s.DAO.DB.ScanRows(rows, &findPostsResult)
 		findPostsResults = append(findPostsResults, findPostsResult)
 	}
 
 	// 查詢總筆數。
 	sql = fmt.Sprintf(sqlTemplate["FindTopicTotalCount"], table, table)
-	row := s.DB.Raw(sql, id, id).Row()
+	row := s.DAO.DB.Raw(sql, id, id).Row()
 	row.Scan(&totalCount)
 	return
 }
@@ -151,7 +155,7 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, userID int) (post Post, err error) {
 
 	// 查詢原本文章。
-	err = s.DB.Table("post_"+category).First(&post, id).Error
+	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
 		return Post{}, err
@@ -175,7 +179,9 @@ func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, 
 
 	// 修改文章。
 	post.Content = postOnUpdate.Content
-	err = s.DB.Table("post_" + category).Save(&post).Error
+	err = s.DAO.WithinTransaction(func(tx *gorm.DB) error {
+		return tx.Table("post_" + category).Save(&post).Error
+	})
 
 	if err != nil {
 		return Post{}, err
@@ -188,14 +194,14 @@ func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, 
 func (s Service) DeletePost(category string, id, userID int) (post Post, err error) {
 
 	// 查詢原本文章。
-	err = s.DB.Table("post_"+category).First(&post, id).Error
+	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
 		return Post{}, err
 	}
 
 	user := auth.UserProfile{}
-	err = s.DB.First(&user, userID).Error
+	err = s.DAO.DB.First(&user, userID).Error
 
 	if err != nil {
 		return Post{}, err
@@ -214,7 +220,9 @@ func (s Service) DeletePost(category string, id, userID int) (post Post, err err
 	post.Content = &content
 	deleteAt := time.Now()
 	post.DeletedAt = &deleteAt
-	err = s.DB.Table("post_" + category).Save(&post).Error
+	err = s.DAO.WithinTransaction(func(tx *gorm.DB) error {
+		return tx.Table("post_" + category).Save(&post).Error
+	})
 
 	if err != nil {
 		return Post{}, err

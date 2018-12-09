@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/kakurineuin/golang-forum/auth"
-	"github.com/kakurineuin/golang-forum/db/gorm"
 	"github.com/labstack/echo"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,7 +16,7 @@ import (
 var _ = Describe("Auth Handler", func() {
 	Describe("Register", func() {
 		AfterEach(func() {
-			gorm.DB.Delete(auth.UserProfile{})
+			dao.DB.Delete(auth.UserProfile{})
 		})
 		It("should register successfully", func() {
 			requestJSON := `{
@@ -72,12 +71,12 @@ var _ = Describe("Auth Handler", func() {
 				Role:     &role,
 			}
 
-			if err := gorm.DB.Table("user_profile").Create(&test001).Error; err != nil {
+			if err := dao.DB.Table("user_profile").Create(&test001).Error; err != nil {
 				panic(err)
 			}
 		})
 		AfterEach(func() {
-			gorm.DB.Delete(auth.UserProfile{})
+			dao.DB.Delete(auth.UserProfile{})
 		})
 		It("should login successfully", func() {
 			requestJSON := `{

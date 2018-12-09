@@ -4,18 +4,19 @@ import (
 	"strings"
 
 	"github.com/jinzhu/gorm"
+	"github.com/kakurineuin/golang-forum/database"
 )
 
 // Service 處理請求的 Service。
 type Service struct {
-	DB *gorm.DB
+	DAO *database.DAO
 }
 
 // FindUsers 查詢使用者。
 func (s Service) FindUsers(searchUser string, offset, limit int) (users []User, totalCount int, err error) {
 	users = make([]User, 0)
 	searchUser = strings.TrimSpace(searchUser)
-	DB := s.DB.Table("user_profile").Offset(offset).Limit(limit).Order("username asc")
+	DB := s.DAO.DB.Table("user_profile").Offset(offset).Limit(limit).Order("username asc")
 
 	if searchUser != "" {
 		DB = DB.Where("username like ?", "%"+searchUser+"%")
@@ -28,7 +29,7 @@ func (s Service) FindUsers(searchUser string, offset, limit int) (users []User, 
 	}
 
 	// 查詢總筆數。
-	DB = s.DB.Table("user_profile")
+	DB = s.DAO.DB.Table("user_profile")
 
 	if searchUser != "" {
 		DB = DB.Where("username like ?", "%"+searchUser+"%")

@@ -8,7 +8,6 @@ import (
 
 	"github.com/kakurineuin/golang-forum/admin"
 	"github.com/kakurineuin/golang-forum/auth"
-	"github.com/kakurineuin/golang-forum/db/gorm"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
@@ -31,14 +30,14 @@ var _ = Describe("Admin Handler", func() {
 				Role:     &role,
 			}
 
-			if err := gorm.DB.Create(&newUser).Error; err != nil {
+			if err := dao.DB.Create(&newUser).Error; err != nil {
 				panic(err)
 			}
 		}
 	})
 
 	AfterEach(func() {
-		gorm.DB.Delete(auth.UserProfile{})
+		dao.DB.Delete(auth.UserProfile{})
 	})
 
 	Describe("Find users", func() {

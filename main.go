@@ -4,7 +4,7 @@ import (
 	"github.com/kakurineuin/golang-forum/admin"
 	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/kakurineuin/golang-forum/config"
-	"github.com/kakurineuin/golang-forum/db/gorm"
+	"github.com/kakurineuin/golang-forum/database"
 	forumError "github.com/kakurineuin/golang-forum/error"
 	"github.com/kakurineuin/golang-forum/logger"
 	forumMiddleware "github.com/kakurineuin/golang-forum/middleware"
@@ -18,7 +18,7 @@ import (
 func main() {
 	config.Init("./config", "config")
 
-	gorm.InitDB(
+	dao := database.InitDAO(
 		config.Viper.GetString("database.user"),
 		config.Viper.GetString("database.password"),
 		config.Viper.GetString("database.dbname"),
@@ -58,14 +58,14 @@ func main() {
 	apiGroup := e.Group("/api")
 
 	// Auth route
-	authService := auth.Service{DB: gorm.DB}
+	authService := auth.Service{DAO: dao}
 	authHandler := auth.Handler{Service: &authService}
 	authGroup := apiGroup.Group("/auth")
 	authGroup.POST("/register", authHandler.Register)
 	authGroup.POST("/login", authHandler.Login)
 
 	// Posts route
-	postService := post.Service{DB: gorm.DB}
+	postService := post.Service{DAO: dao}
 	postHandler := post.Handler{Service: &postService}
 	postsGroup := apiGroup.Group("/topics")
 	postsGroup.GET("/statistics", postHandler.FindTopicsStatistics)
@@ -80,7 +80,7 @@ func main() {
 	apiGroup.GET("/forum/statistics", postHandler.FindForumStatistics)
 
 	// Admin
-	adminService := admin.Service{DB: gorm.DB}
+	adminService := admin.Service{DAO: dao}
 	adminHandler := admin.Handler{Service: &adminService}
 	apiGroup.GET("/users", adminHandler.FindUsers, jwtMiddleware, forumMiddleware.Admin)
 

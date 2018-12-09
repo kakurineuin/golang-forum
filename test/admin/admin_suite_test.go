@@ -7,7 +7,7 @@ import (
 
 	"github.com/kakurineuin/golang-forum/admin"
 	"github.com/kakurineuin/golang-forum/config"
-	"github.com/kakurineuin/golang-forum/db/gorm"
+	"github.com/kakurineuin/golang-forum/database"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -17,6 +17,7 @@ import (
 )
 
 var e *echo.Echo
+var dao *database.DAO
 var handler admin.Handler
 
 func TestAdmin(t *testing.T) {
@@ -27,13 +28,13 @@ func TestAdmin(t *testing.T) {
 var _ = BeforeSuite(func() {
 	config.Init("../../config", "config_test")
 
-	gorm.InitDB(
+	dao = database.InitDAO(
 		config.Viper.GetString("database.user"),
 		config.Viper.GetString("database.password"),
 		config.Viper.GetString("database.dbname"),
 	)
 
-	service := admin.Service{DB: gorm.DB}
+	service := admin.Service{DAO: dao}
 	handler = admin.Handler{Service: &service}
 
 	e = echo.New()
@@ -46,7 +47,7 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	gorm.DB.Close()
+	dao.DB.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
