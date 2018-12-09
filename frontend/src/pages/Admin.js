@@ -112,7 +112,7 @@ class Admin extends Component {
 
     return (
       <div className="container">
-        <h1 class="title">使用者管理</h1>
+        <h1 className="title">使用者管理</h1>
         <div className="field has-addons">
           <div className="control">
             <input
