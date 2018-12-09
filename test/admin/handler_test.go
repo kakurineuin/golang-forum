@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
-var _ = Describe("Admin Handlers", func() {
+var _ = Describe("Admin Handler", func() {
 	BeforeEach(func() {
 
 		// 新增 5 名使用者。

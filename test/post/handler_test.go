@@ -20,7 +20,7 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
-var _ = Describe("Post Handlers", func() {
+var _ = Describe("Post Handler", func() {
 	var userProfileID int     // 使用者 ID。
 	var postGolang1 post.Post // post_golang 文章。
 

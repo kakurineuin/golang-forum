@@ -14,7 +14,7 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
-var _ = Describe("Auth Handlers", func() {
+var _ = Describe("Auth Handler", func() {
 	Describe("Register", func() {
 		AfterEach(func() {
 			gorm.DB.Delete(auth.UserProfile{})
