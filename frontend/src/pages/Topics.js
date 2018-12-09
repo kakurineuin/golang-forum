@@ -201,28 +201,41 @@ class Topics extends Component {
 
     return (
       <div className="container">
-        <div className="field has-addons">
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              value={this.state.inputSearchTopic}
-              onChange={event =>
-                this.inputSearchTopicChangeHandler(event.target.value)
-              }
-              onKeyPress={event => this.inputSearchTopicKeyPressHandler(event)}
-              placeholder="搜尋主題"
-            />
+        <nav className="level">
+          <div className="level-left">
+            <div className="level-item">
+              <h1 className="title">{this.props.location.state.title}</h1>
+            </div>
           </div>
-          <div className="control">
-            <button
-              className="button is-info"
-              onClick={event => this.searchHandler()}
-            >
-              搜尋
-            </button>
+          <div className="level-right">
+            <div className="level-item">
+              <div className="field has-addons">
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    value={this.state.inputSearchTopic}
+                    onChange={event =>
+                      this.inputSearchTopicChangeHandler(event.target.value)
+                    }
+                    onKeyPress={event =>
+                      this.inputSearchTopicKeyPressHandler(event)
+                    }
+                    placeholder="搜尋主題"
+                  />
+                </div>
+                <div className="control">
+                  <button
+                    className="button is-info"
+                    onClick={event => this.searchHandler()}
+                  >
+                    搜尋
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </nav>
         {tagSearchTopic}
         <hr />
         <table className="table is-bordered is-striped is-hoverable is-fullwidth">

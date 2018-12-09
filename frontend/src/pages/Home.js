@@ -77,7 +77,14 @@ class Home extends Component {
             <tbody>
               <tr>
                 <td>
-                  <Link to="/topics/golang">Golang</Link>
+                  <Link
+                    to={{
+                      pathname: "/topics/golang",
+                      state: { title: "Golang" }
+                    }}
+                  >
+                    Golang
+                  </Link>
                 </td>
                 <td>{golang.topicCount}</td>
                 <td>{golang.replyCount}</td>
@@ -85,7 +92,14 @@ class Home extends Component {
               </tr>
               <tr>
                 <td>
-                  <Link to="/topics/nodejs">Node.js</Link>
+                  <Link
+                    to={{
+                      pathname: "/topics/nodejs",
+                      state: { title: "Node.js" }
+                    }}
+                  >
+                    Node.js
+                  </Link>
                 </td>
                 <td>{nodeJS.topicCount}</td>
                 <td>{nodeJS.replyCount}</td>
