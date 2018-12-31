@@ -2,15 +2,13 @@ package post_test
 
 import (
 	"encoding/json"
+	"github.com/kakurineuin/golang-forum/model"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/kakurineuin/golang-forum/auth"
-
-	"github.com/kakurineuin/golang-forum/post"
 	"github.com/labstack/echo"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -20,8 +18,8 @@ import (
 )
 
 var _ = Describe("Post Handler", func() {
-	var userProfileID int     // 使用者 ID。
-	var postGolang1 post.Post // post_golang 文章。
+	var userProfileID int      // 使用者 ID。
+	var postGolang1 model.Post // post_golang 文章。
 
 	BeforeEach(func() {
 		// 新增一名使用者。
@@ -29,7 +27,7 @@ var _ = Describe("Post Handler", func() {
 		email := "test001@xxx.com"
 		password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
 		role := "user"
-		user1 := auth.UserProfile{
+		user1 := model.UserProfile{
 			Username: &username,
 			Email:    &email,
 			Password: &password,
@@ -46,7 +44,7 @@ var _ = Describe("Post Handler", func() {
 		for _, table := range []string{"post_golang", "post_nodejs"} {
 			topic := "測試主題001"
 			content := "內容..."
-			post1 := post.Post{
+			post1 := model.Post{
 				UserProfileID: &userProfileID,
 				Topic:         &topic,
 				Content:       &content,
@@ -60,7 +58,7 @@ var _ = Describe("Post Handler", func() {
 				postGolang1 = post1
 			}
 
-			reply1 := post.Post{
+			reply1 := model.Post{
 				UserProfileID: &userProfileID,
 				ReplyPostID:   post1.ID,
 				Topic:         &topic,
@@ -74,10 +72,10 @@ var _ = Describe("Post Handler", func() {
 	})
 
 	AfterEach(func() {
-		dao.DB.Delete(auth.UserProfile{})
+		dao.DB.Delete(model.UserProfile{})
 
 		for _, table := range []string{"post_golang", "post_nodejs"} {
-			dao.DB.Table(table).Unscoped().Delete(post.Post{})
+			dao.DB.Table(table).Unscoped().Delete(model.Post{})
 		}
 	})
 
@@ -86,14 +84,14 @@ var _ = Describe("Post Handler", func() {
 			req := httptest.NewRequest(http.MethodGet, "/forum/statistics", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.FindForumStatistics(c)
+			err := postHandler.FindForumStatistics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				post.ForumStatistics `json:"forumStatistics"`
+				model.ForumStatistics `json:"forumStatistics"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -113,15 +111,15 @@ var _ = Describe("Post Handler", func() {
 			req := httptest.NewRequest(http.MethodGet, "/topics/statistics", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.FindTopicsStatistics(c)
+			err := postHandler.FindTopicsStatistics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Golang post.Statistics `json:"golang"`
-				NodeJS post.Statistics `json:"nodejs"`
+				Golang model.Statistics `json:"golang"`
+				NodeJS model.Statistics `json:"nodejs"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -150,15 +148,15 @@ var _ = Describe("Post Handler", func() {
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category")
 			c.SetParamValues("golang")
-			err := handler.FindTopics(c)
+			err := postHandler.FindTopics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Topics     []post.Topic `json:"topics"`
-				TotalCount int          `json:"totalCount"`
+				Topics     []model.Topic `json:"topics"`
+				TotalCount int           `json:"totalCount"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -178,15 +176,15 @@ var _ = Describe("Post Handler", func() {
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
-			err := handler.FindTopic(c)
+			err := postHandler.FindTopic(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Posts      []post.Post `json:"posts"`
-				TotalCount int         `json:"totalCount"`
+				Posts      []model.Post `json:"posts"`
+				TotalCount int          `json:"totalCount"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -212,14 +210,14 @@ var _ = Describe("Post Handler", func() {
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category")
 			c.SetParamValues("golang")
-			err := handler.CreatePost(c)
+			err := postHandler.CreatePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusCreated))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Post post.Post `json:"post"`
+				Post model.Post `json:"post"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -252,14 +250,14 @@ var _ = Describe("Post Handler", func() {
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
 			c.Set("user", createToken(userProfileID))
-			err := handler.UpdatePost(c)
+			err := postHandler.UpdatePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Post post.Post `json:"post"`
+				Post model.Post `json:"post"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -288,14 +286,14 @@ var _ = Describe("Post Handler", func() {
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
 			c.Set("user", createToken(userProfileID))
-			err := handler.DeletePost(c)
+			err := postHandler.DeletePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Post post.Post `json:"post"`
+				Post model.Post `json:"post"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 

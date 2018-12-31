@@ -2,12 +2,13 @@ package admin_test
 
 import (
 	"context"
+	"github.com/kakurineuin/golang-forum/handler"
 	"testing"
 	"time"
 
-	"github.com/kakurineuin/golang-forum/admin"
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/database"
+	"github.com/kakurineuin/golang-forum/service"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -18,7 +19,7 @@ import (
 
 var e *echo.Echo
 var dao *database.DAO
-var handler admin.Handler
+var adminHandler handler.AdminHandler
 
 func TestAdmin(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -34,8 +35,8 @@ var _ = BeforeSuite(func() {
 		config.Viper.GetString("database.dbname"),
 	)
 
-	service := admin.Service{DAO: dao}
-	handler = admin.Handler{Service: &service}
+	adminService := service.AdminService{DAO: dao}
+	adminHandler = handler.AdminHandler{AdminService: &adminService}
 
 	e = echo.New()
 	validator := validator.InitValidator()

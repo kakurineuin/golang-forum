@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/kakurineuin/golang-forum/admin"
-	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/database"
 	forumError "github.com/kakurineuin/golang-forum/error"
+	"github.com/kakurineuin/golang-forum/handler"
 	"github.com/kakurineuin/golang-forum/logger"
 	forumMiddleware "github.com/kakurineuin/golang-forum/middleware"
-	"github.com/kakurineuin/golang-forum/post"
+	"github.com/kakurineuin/golang-forum/service"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -58,20 +57,20 @@ func main() {
 	apiGroup := e.Group("/api")
 
 	// Auth route
-	authService := auth.Service{DAO: dao}
-	authHandler := auth.Handler{Service: &authService}
+	authService := service.AuthService{DAO: dao}
+	authHandler := handler.AuthHandler{AuthService: &authService}
 	authGroup := apiGroup.Group("/auth")
 	authGroup.POST("/register", authHandler.Register)
 	authGroup.POST("/login", authHandler.Login)
 
 	// Posts route
-	postService := post.Service{DAO: dao}
-	postHandler := post.Handler{Service: &postService}
+	postService := service.PostService{DAO: dao}
+	postHandler := handler.PostHandler{PostService: &postService}
 	postsGroup := apiGroup.Group("/topics")
 	postsGroup.GET("/statistics", postHandler.FindTopicsStatistics)
 	postsGroup.GET("/:category/:id", postHandler.FindTopic)
 	postsGroup.GET("/:category", postHandler.FindTopics)
-	jwtMiddleware := middleware.JWT([]byte(auth.JwtSecret))
+	jwtMiddleware := middleware.JWT([]byte(handler.JwtSecret))
 	postsGroup.POST("/:category", postHandler.CreatePost, jwtMiddleware)
 	postsGroup.PUT("/:category/:id", postHandler.UpdatePost, jwtMiddleware)
 	postsGroup.DELETE("/:category/:id", postHandler.DeletePost, jwtMiddleware)
@@ -80,8 +79,8 @@ func main() {
 	apiGroup.GET("/forum/statistics", postHandler.FindForumStatistics)
 
 	// Admin
-	adminService := admin.Service{DAO: dao}
-	adminHandler := admin.Handler{Service: &adminService}
+	adminService := service.AdminService{DAO: dao}
+	adminHandler := handler.AdminHandler{AdminService: &adminService}
 	adminGroup := apiGroup.Group("/users")
 	adminGroup.Use(jwtMiddleware, forumMiddleware.Admin)
 	adminGroup.GET("", adminHandler.FindUsers)

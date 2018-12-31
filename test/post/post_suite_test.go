@@ -2,12 +2,13 @@ package post_test
 
 import (
 	"context"
+	"github.com/kakurineuin/golang-forum/handler"
+	"github.com/kakurineuin/golang-forum/service"
 	"testing"
 	"time"
 
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/database"
-	"github.com/kakurineuin/golang-forum/post"
 	"github.com/kakurineuin/golang-forum/validator"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -18,7 +19,7 @@ import (
 
 var e *echo.Echo
 var dao *database.DAO
-var handler post.Handler
+var postHandler handler.PostHandler
 
 func TestPost(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -34,10 +35,10 @@ var _ = BeforeSuite(func() {
 		config.Viper.GetString("database.dbname"),
 	)
 
-	postService := post.Service{
+	postService := service.PostService{
 		DAO: dao,
 	}
-	handler = post.Handler{Service: &postService}
+	postHandler = handler.PostHandler{PostService: &postService}
 
 	e = echo.New()
 	validator := validator.InitValidator()

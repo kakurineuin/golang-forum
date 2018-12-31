@@ -1,4 +1,4 @@
-package post
+package model
 
 import (
 	"time"

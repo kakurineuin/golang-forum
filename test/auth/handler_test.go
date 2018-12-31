@@ -2,11 +2,11 @@ package auth_test
 
 import (
 	"encoding/json"
+	"github.com/kakurineuin/golang-forum/model"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
-	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/labstack/echo"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,7 +16,7 @@ import (
 var _ = Describe("Auth Handler", func() {
 	Describe("Register", func() {
 		AfterEach(func() {
-			dao.DB.Delete(auth.UserProfile{})
+			dao.DB.Delete(model.UserProfile{})
 		})
 		It("should register successfully", func() {
 			requestJSON := `{
@@ -28,16 +28,16 @@ var _ = Describe("Auth Handler", func() {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.Register(c)
+			err := authHandler.Register(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Token            string `json:"token"`
-				Exp              int    `json:"exp"`
-				auth.UserProfile `json:"userProfile"`
+				Token             string `json:"token"`
+				Exp               int    `json:"exp"`
+				model.UserProfile `json:"userProfile"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 
@@ -66,7 +66,7 @@ var _ = Describe("Auth Handler", func() {
 			password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
 			role := "user"
 			isDisabled := 0
-			test001 := auth.UserProfile{
+			test001 := model.UserProfile{
 				Username:   &username,
 				Email:      &email,
 				Password:   &password,
@@ -79,7 +79,7 @@ var _ = Describe("Auth Handler", func() {
 			}
 		})
 		AfterEach(func() {
-			dao.DB.Delete(auth.UserProfile{})
+			dao.DB.Delete(model.UserProfile{})
 		})
 		It("should login successfully", func() {
 			requestJSON := `{
@@ -90,16 +90,16 @@ var _ = Describe("Auth Handler", func() {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.Login(c)
+			err := authHandler.Login(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Token            string `json:"token"`
-				Exp              int    `json:"exp"`
-				auth.UserProfile `json:"userProfile"`
+				Token             string `json:"token"`
+				Exp               int    `json:"exp"`
+				model.UserProfile `json:"userProfile"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 

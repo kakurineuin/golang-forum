@@ -1,6 +1,8 @@
-package post
+package handler
 
 import (
+	"github.com/kakurineuin/golang-forum/model"
+	"github.com/kakurineuin/golang-forum/service"
 	"net/http"
 	"strconv"
 
@@ -8,14 +10,14 @@ import (
 	"github.com/labstack/echo"
 )
 
-// Handler 處理請求的 handler。
-type Handler struct {
-	Service *Service
+// PostHandler 處理請求的 handler。
+type PostHandler struct {
+	PostService *service.PostService
 }
 
 // FindForumStatistics 查詢論壇統計資料。
-func (h Handler) FindForumStatistics(c echo.Context) (err error) {
-	forumStatistics, err := h.Service.FindForumStatistics()
+func (h PostHandler) FindForumStatistics(c echo.Context) (err error) {
+	forumStatistics, err := h.PostService.FindForumStatistics()
 
 	if err != nil {
 		return
@@ -27,8 +29,8 @@ func (h Handler) FindForumStatistics(c echo.Context) (err error) {
 }
 
 // FindTopicsStatistics 查詢主題統計資料。
-func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
-	golangStatistics, nodeJSStatistics, err := h.Service.FindTopicsStatistics()
+func (h PostHandler) FindTopicsStatistics(c echo.Context) (err error) {
+	golangStatistics, nodeJSStatistics, err := h.PostService.FindTopicsStatistics()
 
 	if err != nil {
 		return
@@ -41,7 +43,7 @@ func (h Handler) FindTopicsStatistics(c echo.Context) (err error) {
 }
 
 // FindTopics 查詢主題列表。
-func (h Handler) FindTopics(c echo.Context) (err error) {
+func (h PostHandler) FindTopics(c echo.Context) (err error) {
 	category := c.Param("category")
 	searchTopic := c.QueryParam("searchTopic")
 	offset, err := strconv.Atoi(c.QueryParam("offset"))
@@ -57,7 +59,7 @@ func (h Handler) FindTopics(c echo.Context) (err error) {
 	}
 
 	c.Logger().Infof("category: %v, searchTopic: %v, offset: %v, limit: %v", category, searchTopic, offset, limit)
-	topics, totalCount, err := h.Service.FindTopics(category, searchTopic, offset, limit)
+	topics, totalCount, err := h.PostService.FindTopics(category, searchTopic, offset, limit)
 
 	if err != nil {
 		return
@@ -70,8 +72,8 @@ func (h Handler) FindTopics(c echo.Context) (err error) {
 }
 
 // CreatePost 新增文章。
-func (h Handler) CreatePost(c echo.Context) (err error) {
-	post := new(Post)
+func (h PostHandler) CreatePost(c echo.Context) (err error) {
+	post := new(model.Post)
 
 	if err = c.Bind(post); err != nil {
 		return
@@ -83,7 +85,7 @@ func (h Handler) CreatePost(c echo.Context) (err error) {
 		})
 	}
 
-	err = h.Service.CreatePost(c.Param("category"), post)
+	err = h.PostService.CreatePost(c.Param("category"), post)
 
 	if err != nil {
 		return
@@ -104,7 +106,7 @@ func (h Handler) CreatePost(c echo.Context) (err error) {
 }
 
 // FindTopic 查詢某個主題的討論文章。
-func (h Handler) FindTopic(c echo.Context) (err error) {
+func (h PostHandler) FindTopic(c echo.Context) (err error) {
 	category := c.Param("category")
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -126,7 +128,7 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 
 	c.Logger().Infof("category: %v, id: %v, offset: %v, limit: %v", category, id, offset, limit)
 
-	findPostsResults, totalCount, err := h.Service.FindTopic(category, id, offset, limit)
+	findPostsResults, totalCount, err := h.PostService.FindTopic(category, id, offset, limit)
 
 	if err != nil {
 		return
@@ -139,8 +141,8 @@ func (h Handler) FindTopic(c echo.Context) (err error) {
 }
 
 // UpdatePost 修改文章。
-func (h Handler) UpdatePost(c echo.Context) (err error) {
-	postOnUpdate := new(PostOnUpdate)
+func (h PostHandler) UpdatePost(c echo.Context) (err error) {
+	postOnUpdate := new(model.PostOnUpdate)
 
 	if err = c.Bind(postOnUpdate); err != nil {
 		return
@@ -158,7 +160,7 @@ func (h Handler) UpdatePost(c echo.Context) (err error) {
 		return
 	}
 
-	post, err := h.Service.UpdatePost(c.Param("category"), id, *postOnUpdate, getUserID(c))
+	post, err := h.PostService.UpdatePost(c.Param("category"), id, *postOnUpdate, getUserID(c))
 
 	if err != nil {
 		return
@@ -171,14 +173,14 @@ func (h Handler) UpdatePost(c echo.Context) (err error) {
 }
 
 // DeletePost 刪除文章。
-func (h Handler) DeletePost(c echo.Context) (err error) {
+func (h PostHandler) DeletePost(c echo.Context) (err error) {
 	id, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		return
 	}
 
-	post, err := h.Service.DeletePost(c.Param("category"), id, getUserID(c))
+	post, err := h.PostService.DeletePost(c.Param("category"), id, getUserID(c))
 
 	if err != nil {
 		return

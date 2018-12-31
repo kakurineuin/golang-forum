@@ -1,6 +1,7 @@
-package auth
+package service
 
 import (
+	"github.com/kakurineuin/golang-forum/model"
 	"net/http"
 
 	"github.com/kakurineuin/golang-forum/database"
@@ -13,13 +14,13 @@ import (
 // roleUser 表示角色是一般使用者。
 const roleUser string = "user"
 
-// Service 處理請求的 service。
-type Service struct {
+// AuthService 處理請求的 service。
+type AuthService struct {
 	DAO *database.DAO
 }
 
 // Register 註冊。
-func (s Service) Register(userProfile *UserProfile) (err error) {
+func (s AuthService) Register(userProfile *model.UserProfile) (err error) {
 
 	// 檢查是否已有相同使用者名稱。
 	count := 0
@@ -70,22 +71,22 @@ func (s Service) Register(userProfile *UserProfile) (err error) {
 }
 
 // Login 登入。
-func (s Service) Login(loginRequest LoginRequest) (userProfile UserProfile, err error) {
+func (s AuthService) Login(loginRequest model.LoginRequest) (userProfile model.UserProfile, err error) {
 
 	// 查詢帳號。
 	if err = s.DAO.DB.Where("email = ?", loginRequest.Email).First(&userProfile).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return UserProfile{}, fe.CustomError{
+			return model.UserProfile{}, fe.CustomError{
 				HTTPStatusCode: http.StatusNotFound,
 				Message:        "查無此 email 帳號。",
 			}
 		}
 
-		return UserProfile{}, err
+		return model.UserProfile{}, err
 	}
 
 	if *userProfile.IsDisabled == 1 {
-		return UserProfile{}, fe.CustomError{
+		return model.UserProfile{}, fe.CustomError{
 			HTTPStatusCode: http.StatusForbidden,
 			Message:        "此帳號已被停用。",
 		}
@@ -94,7 +95,7 @@ func (s Service) Login(loginRequest LoginRequest) (userProfile UserProfile, err 
 	// 核對密碼。
 	err = bcrypt.CompareHashAndPassword([]byte(*userProfile.Password), []byte(*loginRequest.Password))
 	if err != nil {
-		return UserProfile{}, fe.CustomError{
+		return model.UserProfile{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "密碼錯誤。",
 		}

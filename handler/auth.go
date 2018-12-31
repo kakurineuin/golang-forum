@@ -1,6 +1,8 @@
-package auth
+package handler
 
 import (
+	"github.com/kakurineuin/golang-forum/model"
+	"github.com/kakurineuin/golang-forum/service"
 	"net/http"
 	"time"
 
@@ -11,14 +13,14 @@ import (
 // JwtSecret JWT secret key。
 const JwtSecret = "die_meere"
 
-// Handler 處理請求的 handler。
-type Handler struct {
-	Service *Service
+// AuthHandler 處理請求的 handler。
+type AuthHandler struct {
+	AuthService *service.AuthService
 }
 
 // Register 註冊。
-func (h Handler) Register(c echo.Context) (err error) {
-	userProfile := new(UserProfile)
+func (h AuthHandler) Register(c echo.Context) (err error) {
+	userProfile := new(model.UserProfile)
 
 	if err = c.Bind(userProfile); err != nil {
 		return
@@ -30,7 +32,7 @@ func (h Handler) Register(c echo.Context) (err error) {
 		})
 	}
 
-	if err = h.Service.Register(userProfile); err != nil {
+	if err = h.AuthService.Register(userProfile); err != nil {
 		return
 	}
 
@@ -39,8 +41,8 @@ func (h Handler) Register(c echo.Context) (err error) {
 }
 
 // Login 登入。
-func (h Handler) Login(c echo.Context) (err error) {
-	loginRequest := new(LoginRequest)
+func (h AuthHandler) Login(c echo.Context) (err error) {
+	loginRequest := new(model.LoginRequest)
 
 	if err = c.Bind(loginRequest); err != nil {
 		return
@@ -52,7 +54,7 @@ func (h Handler) Login(c echo.Context) (err error) {
 		})
 	}
 
-	userProfile, err := h.Service.Login(*loginRequest)
+	userProfile, err := h.AuthService.Login(*loginRequest)
 
 	if err != nil {
 		return
@@ -62,7 +64,7 @@ func (h Handler) Login(c echo.Context) (err error) {
 	return returnTokenAndUserProfile(c, userProfile, "登入成功。")
 }
 
-func createToken(userProfile UserProfile) (string, int64, error) {
+func createToken(userProfile model.UserProfile) (string, int64, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	exp := time.Now().Add(time.Hour * 72).Unix()
 
@@ -80,7 +82,7 @@ func createToken(userProfile UserProfile) (string, int64, error) {
 }
 
 func returnTokenAndUserProfile(
-	c echo.Context, userProfile UserProfile, message string) (err error) {
+	c echo.Context, userProfile model.UserProfile, message string) (err error) {
 	token, exp, err := createToken(userProfile)
 
 	if err != nil {

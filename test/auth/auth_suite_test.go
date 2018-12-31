@@ -2,10 +2,11 @@ package auth_test
 
 import (
 	"context"
+	"github.com/kakurineuin/golang-forum/handler"
+	"github.com/kakurineuin/golang-forum/service"
 	"testing"
 	"time"
 
-	"github.com/kakurineuin/golang-forum/auth"
 	"github.com/kakurineuin/golang-forum/config"
 	"github.com/kakurineuin/golang-forum/database"
 	"github.com/kakurineuin/golang-forum/validator"
@@ -18,7 +19,7 @@ import (
 
 var e *echo.Echo
 var dao *database.DAO
-var handler auth.Handler
+var authHandler handler.AuthHandler
 
 func TestAuth(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -34,8 +35,8 @@ var _ = BeforeSuite(func() {
 		config.Viper.GetString("database.dbname"),
 	)
 
-	service := auth.Service{DAO: dao}
-	handler = auth.Handler{Service: &service}
+	authService := service.AuthService{DAO: dao}
+	authHandler = handler.AuthHandler{AuthService: &authService}
 
 	e = echo.New()
 	validator := validator.InitValidator()

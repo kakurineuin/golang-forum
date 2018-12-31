@@ -2,14 +2,13 @@ package admin_test
 
 import (
 	"encoding/json"
+	"github.com/kakurineuin/golang-forum/model"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/kakurineuin/golang-forum/admin"
-	"github.com/kakurineuin/golang-forum/auth"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
@@ -27,7 +26,7 @@ var _ = Describe("Admin Handler", func() {
 			email := "test00" + index + "@xxx.com"
 			password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
 			role := "user"
-			newUser := auth.UserProfile{
+			newUser := model.UserProfile{
 				Username: &username,
 				Email:    &email,
 				Password: &password,
@@ -45,7 +44,7 @@ var _ = Describe("Admin Handler", func() {
 	})
 
 	AfterEach(func() {
-		dao.DB.Delete(auth.UserProfile{})
+		dao.DB.Delete(model.UserProfile{})
 	})
 
 	Describe("Find users", func() {
@@ -53,14 +52,14 @@ var _ = Describe("Admin Handler", func() {
 			req := httptest.NewRequest(http.MethodGet, "/users?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := handler.FindUsers(c)
+			err := adminHandler.FindUsers(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				Users      []admin.User `json:"users"`
+				Users      []model.User `json:"users"`
 				TotalCount int          `json:"totalCount"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
@@ -81,14 +80,14 @@ var _ = Describe("Admin Handler", func() {
 			c.SetParamNames("id")
 			c.SetParamValues(userID)
 			c.Set("user", createToken())
-			err := handler.DisableUser(c)
+			err := adminHandler.DisableUser(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
 
 			recBody := rec.Body.String()
 			var result struct {
-				admin.User `json:"user"`
+				model.User `json:"user"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
 

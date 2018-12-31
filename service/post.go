@@ -1,8 +1,9 @@
-package post
+package service
 
 import (
 	"errors"
 	"fmt"
+	"github.com/kakurineuin/golang-forum/model"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,8 +11,6 @@ import (
 	"time"
 
 	"github.com/kakurineuin/golang-forum/database"
-
-	"github.com/kakurineuin/golang-forum/auth"
 
 	"github.com/beevik/etree"
 	"github.com/jinzhu/gorm"
@@ -26,11 +25,11 @@ func init() {
 	sqlTemplatePath := ""
 
 	switch directory {
-	case "post":
-		sqlTemplatePath = "../../sql/template.xml"
 	case "golang-forum":
 		sqlTemplatePath = "sql/template.xml"
 	default:
+		// 執行測試時的路徑。
+		sqlTemplatePath = "../../sql/template.xml"
 		fmt.Println("============== directory", directory)
 	}
 
@@ -47,45 +46,45 @@ func init() {
 	}
 }
 
-// Service 處理請求的 Service。
-type Service struct {
+// PostService 處理請求的 PostService。
+type PostService struct {
 	DAO *database.DAO
 }
 
 // FindForumStatistics 查詢論壇統計資料。
-func (s Service) FindForumStatistics() (forumStatistics ForumStatistics, err error) {
+func (s PostService) FindForumStatistics() (forumStatistics model.ForumStatistics, err error) {
 	err = s.DAO.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return ForumStatistics{}, err
+		return model.ForumStatistics{}, err
 	}
 
 	return forumStatistics, nil
 }
 
 // FindTopicsStatistics 查詢主題統計資料。
-func (s Service) FindTopicsStatistics() (golangStatistics, nodeJSStatistics Statistics, err error) {
+func (s PostService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics model.Statistics, err error) {
 
 	// 查詢 golang 文章統計資料。
 	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return Statistics{}, Statistics{}, err
+		return model.Statistics{}, model.Statistics{}, err
 	}
 
 	// 查詢 Node.js 文章統計資料。
 	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return Statistics{}, Statistics{}, err
+		return model.Statistics{}, model.Statistics{}, err
 	}
 
 	return golangStatistics, nodeJSStatistics, nil
 }
 
 // FindTopics 查詢主題列表。
-func (s Service) FindTopics(category, searchTopic string, offset, limit int) (topics []Topic, totalCount int, err error) {
-	topics = make([]Topic, 0)
+func (s PostService) FindTopics(category, searchTopic string, offset, limit int) (topics []model.Topic, totalCount int, err error) {
+	topics = make([]model.Topic, 0)
 	searchTopic = "%" + strings.TrimSpace(searchTopic) + "%"
 
 	table, err := getTable(category)
@@ -103,7 +102,7 @@ func (s Service) FindTopics(category, searchTopic string, offset, limit int) (to
 	}
 
 	for rows.Next() {
-		var topic Topic
+		var topic model.Topic
 		s.DAO.DB.ScanRows(rows, &topic)
 		topics = append(topics, topic)
 	}
@@ -116,14 +115,14 @@ func (s Service) FindTopics(category, searchTopic string, offset, limit int) (to
 }
 
 // CreatePost 新增文章。
-func (s Service) CreatePost(category string, post *Post) (err error) {
+func (s PostService) CreatePost(category string, post *model.Post) (err error) {
 	return s.DAO.WithinTransaction(func(tx *gorm.DB) error {
 		return tx.Table("post_" + category).Create(post).Error
 	})
 }
 
 // FindTopic 查詢某個主題的討論文章。
-func (s Service) FindTopic(category string, id, offset, limit int) (findPostsResults []FindPostsResult, totalCount int, err error) {
+func (s PostService) FindTopic(category string, id, offset, limit int) (findPostsResults []model.FindPostsResult, totalCount int, err error) {
 	table, err := getTable(category)
 
 	if err != nil {
@@ -139,7 +138,7 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 	}
 
 	for rows.Next() {
-		var findPostsResult FindPostsResult
+		var findPostsResult model.FindPostsResult
 		s.DAO.DB.ScanRows(rows, &findPostsResult)
 		findPostsResults = append(findPostsResults, findPostsResult)
 	}
@@ -152,18 +151,18 @@ func (s Service) FindTopic(category string, id, offset, limit int) (findPostsRes
 }
 
 // UpdatePost 修改文章。
-func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, userID int) (post Post, err error) {
+func (s PostService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userID int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
-		return Post{}, err
+		return model.Post{}, err
 	}
 
 	// 不能修改已刪除的文章。
 	if post.DeletedAt != nil {
-		return Post{}, fe.CustomError{
+		return model.Post{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "不能修改已刪除的文章。",
 		}
@@ -171,7 +170,7 @@ func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, 
 
 	// 不能修改別人的文章。
 	if *post.UserProfileID != userID {
-		return Post{}, fe.CustomError{
+		return model.Post{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "不能修改別人的文章。",
 		}
@@ -184,32 +183,32 @@ func (s Service) UpdatePost(category string, id int, postOnUpdate PostOnUpdate, 
 	})
 
 	if err != nil {
-		return Post{}, err
+		return model.Post{}, err
 	}
 
 	return
 }
 
 // DeletePost 刪除文章，不是真的刪除，而是修改文章內容和刪除時間欄位。
-func (s Service) DeletePost(category string, id, userID int) (post Post, err error) {
+func (s PostService) DeletePost(category string, id, userID int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
-		return Post{}, err
+		return model.Post{}, err
 	}
 
-	user := auth.UserProfile{}
+	user := model.UserProfile{}
 	err = s.DAO.DB.First(&user, userID).Error
 
 	if err != nil {
-		return Post{}, err
+		return model.Post{}, err
 	}
 
 	// 不是系統管理員則不能刪除別人的文章。
 	if *user.Role != "admin" && *post.UserProfileID != userID {
-		return Post{}, fe.CustomError{
+		return model.Post{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "不能刪除別人的文章。",
 		}
@@ -225,7 +224,7 @@ func (s Service) DeletePost(category string, id, userID int) (post Post, err err
 	})
 
 	if err != nil {
-		return Post{}, err
+		return model.Post{}, err
 	}
 
 	return

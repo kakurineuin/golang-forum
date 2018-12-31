@@ -1,19 +1,20 @@
-package admin
+package handler
 
 import (
+	"github.com/kakurineuin/golang-forum/service"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo"
 )
 
-// Handler 處理請求的 handler。
-type Handler struct {
-	Service *Service
+// AdminHandler 處理請求的 handler。
+type AdminHandler struct {
+	AdminService *service.AdminService
 }
 
 // FindUsers 查詢使用者。
-func (h Handler) FindUsers(c echo.Context) (err error) {
+func (h AdminHandler) FindUsers(c echo.Context) (err error) {
 	searchUser := c.QueryParam("searchUser")
 	offset, err := strconv.Atoi(c.QueryParam("offset"))
 
@@ -28,7 +29,7 @@ func (h Handler) FindUsers(c echo.Context) (err error) {
 	}
 
 	c.Logger().Infof("searchUser: %v, offset: %v, limit: %v", searchUser, offset, limit)
-	users, totalCount, err := h.Service.FindUsers(searchUser, offset, limit)
+	users, totalCount, err := h.AdminService.FindUsers(searchUser, offset, limit)
 
 	if err != nil {
 		return
@@ -41,14 +42,14 @@ func (h Handler) FindUsers(c echo.Context) (err error) {
 }
 
 // DisableUser 停用使用者。
-func (h Handler) DisableUser(c echo.Context) (err error) {
+func (h AdminHandler) DisableUser(c echo.Context) (err error) {
 	id, err := strconv.Atoi(c.Param("id"))
 
 	if err != nil {
 		return
 	}
 
-	user, err := h.Service.DisableUser(id)
+	user, err := h.AdminService.DisableUser(id)
 
 	if err != nil {
 		return

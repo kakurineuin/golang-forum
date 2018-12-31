@@ -1,20 +1,21 @@
-package admin
+package service
 
 import (
+	"github.com/kakurineuin/golang-forum/model"
 	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/kakurineuin/golang-forum/database"
 )
 
-// Service 處理請求的 Service。
-type Service struct {
+// AdminService 處理請求的 AdminService。
+type AdminService struct {
 	DAO *database.DAO
 }
 
 // FindUsers 查詢使用者。
-func (s Service) FindUsers(searchUser string, offset, limit int) (users []User, totalCount int, err error) {
-	users = make([]User, 0)
+func (s AdminService) FindUsers(searchUser string, offset, limit int) (users []model.User, totalCount int, err error) {
+	users = make([]model.User, 0)
 	searchUser = strings.TrimSpace(searchUser)
 	DB := s.DAO.DB.Table("user_profile").Offset(offset).Limit(limit).Order("username asc")
 
@@ -45,19 +46,19 @@ func (s Service) FindUsers(searchUser string, offset, limit int) (users []User, 
 }
 
 // DisableUser 停用使用者。
-func (s Service) DisableUser(id int) (user User, err error) {
+func (s AdminService) DisableUser(id int) (user model.User, err error) {
 	err = s.DAO.WithinTransaction(func(tx *gorm.DB) error {
 		return tx.Table("user_profile").Where("id = ?", id).Update("is_disabled", 1).Error
 	})
 
 	if err != nil {
-		return User{}, err
+		return model.User{}, err
 	}
 
 	err = s.DAO.DB.Table("user_profile").First(&user, id).Error
 
 	if err != nil {
-		return User{}, err
+		return model.User{}, err
 	}
 
 	return user, nil
