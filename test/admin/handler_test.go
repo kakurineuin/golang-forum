@@ -21,9 +21,9 @@ var _ = Describe("Admin Handler", func() {
 
 		// 新增 5 名使用者。
 		for i := 0; i < 5; i++ {
-			index := strconv.Itoa(i + 1)
-			username := "test00" + index
-			email := "test00" + index + "@xxx.com"
+			number := strconv.Itoa(i + 1)
+			username := "test00" + number
+			email := "test00" + number + "@xxx.com"
 			password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
 			role := "user"
 			newUser := model.UserProfile{
