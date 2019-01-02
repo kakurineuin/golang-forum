@@ -46,7 +46,7 @@ func init() {
 	}
 }
 
-// PostService 處理請求的 PostService。
+// PostService 處理請求的 service。
 type PostService struct {
 	DAO *database.DAO
 }
