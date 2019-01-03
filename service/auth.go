@@ -73,7 +73,7 @@ func (s AuthService) Register(userProfile *model.UserProfile) (err error) {
 // Login 登入。
 func (s AuthService) Login(loginRequest model.LoginRequest) (userProfile model.UserProfile, err error) {
 
-	// 查詢帳號。
+	// 檢查帳號是否存在。
 	if err = s.DAO.DB.Where("email = ?", loginRequest.Email).First(&userProfile).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.UserProfile{}, fe.CustomError{
@@ -85,6 +85,7 @@ func (s AuthService) Login(loginRequest model.LoginRequest) (userProfile model.U
 		return model.UserProfile{}, err
 	}
 
+	// 檢查帳號是否已被停用。
 	if *userProfile.IsDisabled == 1 {
 		return model.UserProfile{}, fe.CustomError{
 			HTTPStatusCode: http.StatusForbidden,
