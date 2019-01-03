@@ -46,13 +46,13 @@ func init() {
 	}
 }
 
-// PostService 處理請求的 service。
-type PostService struct {
+// TopicService 處理請求的 service。
+type TopicService struct {
 	DAO *database.DAO
 }
 
 // FindForumStatistics 查詢論壇統計資料。
-func (s PostService) FindForumStatistics() (forumStatistics model.ForumStatistics, err error) {
+func (s TopicService) FindForumStatistics() (forumStatistics model.ForumStatistics, err error) {
 	err = s.DAO.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -63,7 +63,7 @@ func (s PostService) FindForumStatistics() (forumStatistics model.ForumStatistic
 }
 
 // FindTopicsStatistics 查詢主題統計資料。
-func (s PostService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics model.Statistics, err error) {
+func (s TopicService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics model.Statistics, err error) {
 
 	// 查詢 golang 文章統計資料。
 	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
@@ -83,7 +83,7 @@ func (s PostService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics 
 }
 
 // FindTopics 查詢主題列表。
-func (s PostService) FindTopics(category, searchTopic string, offset, limit int) (topics []model.Topic, totalCount int, err error) {
+func (s TopicService) FindTopics(category, searchTopic string, offset, limit int) (topics []model.Topic, totalCount int, err error) {
 	topics = make([]model.Topic, 0)
 	searchTopic = "%" + strings.TrimSpace(searchTopic) + "%"
 
@@ -115,14 +115,14 @@ func (s PostService) FindTopics(category, searchTopic string, offset, limit int)
 }
 
 // CreatePost 新增文章。
-func (s PostService) CreatePost(category string, post *model.Post) (err error) {
+func (s TopicService) CreatePost(category string, post *model.Post) (err error) {
 	return s.DAO.WithinTransaction(func(tx *gorm.DB) error {
 		return tx.Table("post_" + category).Create(post).Error
 	})
 }
 
 // FindTopic 查詢某個主題的討論文章。
-func (s PostService) FindTopic(category string, id, offset, limit int) (findPostsResults []model.FindPostsResult, totalCount int, err error) {
+func (s TopicService) FindTopic(category string, id, offset, limit int) (findPostsResults []model.FindPostsResult, totalCount int, err error) {
 	table, err := getTable(category)
 
 	if err != nil {
@@ -151,7 +151,7 @@ func (s PostService) FindTopic(category string, id, offset, limit int) (findPost
 }
 
 // UpdatePost 修改文章。
-func (s PostService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userID int) (post model.Post, err error) {
+func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userID int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
@@ -190,7 +190,7 @@ func (s PostService) UpdatePost(category string, id int, postOnUpdate model.Post
 }
 
 // DeletePost 刪除文章，不是真的刪除，而是修改文章內容和刪除時間欄位。
-func (s PostService) DeletePost(category string, id, userID int) (post model.Post, err error) {
+func (s TopicService) DeletePost(category string, id, userID int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error

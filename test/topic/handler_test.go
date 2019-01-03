@@ -1,4 +1,4 @@
-package post_test
+package topic_test
 
 import (
 	"encoding/json"
@@ -81,10 +81,10 @@ var _ = Describe("Post Handler", func() {
 
 	Describe("Find forum statistics", func() {
 		It("should find successfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/forum/statistics", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/forum/statistics", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := postHandler.FindForumStatistics(c)
+			err := topicHandler.FindForumStatistics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -108,10 +108,10 @@ var _ = Describe("Post Handler", func() {
 
 	Describe("Find topics statistics", func() {
 		It("should find successfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/topics/statistics", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/topics/statistics", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			err := postHandler.FindTopicsStatistics(c)
+			err := topicHandler.FindTopicsStatistics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -143,12 +143,12 @@ var _ = Describe("Post Handler", func() {
 
 	Describe("Find topics", func() {
 		It("should find successfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/topics/golang?offset=0&limit=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/topics/golang?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category")
 			c.SetParamValues("golang")
-			err := postHandler.FindTopics(c)
+			err := topicHandler.FindTopics(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -171,12 +171,12 @@ var _ = Describe("Post Handler", func() {
 	Describe("Find topic", func() {
 		It("should find successfully", func() {
 			id := strconv.Itoa(*postGolang1.ID)
-			req := httptest.NewRequest(http.MethodGet, "/topics/golang/"+id+"?offset=0&limit=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/topics/golang/"+id+"?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
-			err := postHandler.FindTopic(c)
+			err := topicHandler.FindTopic(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -204,13 +204,13 @@ var _ = Describe("Post Handler", func() {
 				"topic": "測試新增文章",
 				"content": "測試新增文章"
 			}`
-			req := httptest.NewRequest(http.MethodPost, "/topics/golang", strings.NewReader(requestJSON))
+			req := httptest.NewRequest(http.MethodPost, "/api/topics/golang", strings.NewReader(requestJSON))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category")
 			c.SetParamValues("golang")
-			err := postHandler.CreatePost(c)
+			err := topicHandler.CreatePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusCreated))
@@ -243,14 +243,14 @@ var _ = Describe("Post Handler", func() {
 			requestJSON := `{
 				"content": "測試修改文章"
 			}`
-			req := httptest.NewRequest(http.MethodPut, "/topics/golang/"+id, strings.NewReader(requestJSON))
+			req := httptest.NewRequest(http.MethodPut, "/api/topics/golang/"+id, strings.NewReader(requestJSON))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
 			c.Set("user", createToken(userProfileID))
-			err := postHandler.UpdatePost(c)
+			err := topicHandler.UpdatePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))
@@ -280,13 +280,13 @@ var _ = Describe("Post Handler", func() {
 	Describe("Delete post", func() {
 		It("should delete successfully", func() {
 			id := strconv.Itoa(*postGolang1.ID)
-			req := httptest.NewRequest(http.MethodDelete, "/topics/golang/"+id, nil)
+			req := httptest.NewRequest(http.MethodDelete, "/api/topics/golang/"+id, nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
 			c.Set("user", createToken(userProfileID))
-			err := postHandler.DeletePost(c)
+			err := topicHandler.DeletePost(c)
 
 			Expect(err).To(BeNil())
 			Expect(rec.Code).To(Equal(http.StatusOK))

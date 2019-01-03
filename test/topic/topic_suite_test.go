@@ -1,4 +1,4 @@
-package post_test
+package topic_test
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 
 var e *echo.Echo
 var dao *database.DAO
-var postHandler handler.PostHandler
+var topicHandler handler.TopicHandler
 
 func TestPost(t *testing.T) {
 	RegisterFailHandler(Fail)
@@ -35,10 +35,10 @@ var _ = BeforeSuite(func() {
 		config.Viper.GetString("database.dbname"),
 	)
 
-	postService := service.PostService{
+	topicService := service.TopicService{
 		DAO: dao,
 	}
-	postHandler = handler.PostHandler{PostService: &postService}
+	topicHandler = handler.TopicHandler{TopicService: &topicService}
 
 	e = echo.New()
 	validator := validator.InitValidator()

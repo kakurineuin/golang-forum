@@ -64,27 +64,27 @@ func main() {
 	authGroup.POST("/login", authHandler.Login)
 
 	// Posts route
-	postService := service.PostService{DAO: dao}
-	postHandler := handler.PostHandler{PostService: &postService}
-	postsGroup := apiGroup.Group("/topics")
-	postsGroup.GET("/statistics", postHandler.FindTopicsStatistics)
-	postsGroup.GET("/:category/:id", postHandler.FindTopic)
-	postsGroup.GET("/:category", postHandler.FindTopics)
+	topicService := service.TopicService{DAO: dao}
+	topicHandler := handler.TopicHandler{TopicService: &topicService}
+	topicsGroup := apiGroup.Group("/topics")
+	topicsGroup.GET("/statistics", topicHandler.FindTopicsStatistics)
+	topicsGroup.GET("/:category/:id", topicHandler.FindTopic)
+	topicsGroup.GET("/:category", topicHandler.FindTopics)
 	jwtMiddleware := middleware.JWT([]byte(handler.JwtSecret))
-	postsGroup.POST("/:category", postHandler.CreatePost, jwtMiddleware)
-	postsGroup.PUT("/:category/:id", postHandler.UpdatePost, jwtMiddleware)
-	postsGroup.DELETE("/:category/:id", postHandler.DeletePost, jwtMiddleware)
+	topicsGroup.POST("/:category", topicHandler.CreatePost, jwtMiddleware)
+	topicsGroup.PUT("/:category/:id", topicHandler.UpdatePost, jwtMiddleware)
+	topicsGroup.DELETE("/:category/:id", topicHandler.DeletePost, jwtMiddleware)
 
 	// 查詢論壇統計資料。
-	apiGroup.GET("/forum/statistics", postHandler.FindForumStatistics)
+	apiGroup.GET("/forum/statistics", topicHandler.FindForumStatistics)
 
 	// Admin
 	adminService := service.AdminService{DAO: dao}
 	adminHandler := handler.AdminHandler{AdminService: &adminService}
-	adminGroup := apiGroup.Group("/users")
+	adminGroup := apiGroup.Group("/admin")
 	adminGroup.Use(jwtMiddleware, forumMiddleware.Admin)
-	adminGroup.GET("", adminHandler.FindUsers)
-	adminGroup.POST("/disable/:id", adminHandler.DisableUser)
+	adminGroup.GET("/users", adminHandler.FindUsers)
+	adminGroup.POST("/users/disable/:id", adminHandler.DisableUser)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

@@ -53,7 +53,7 @@ class Admin extends Component {
 
   findUsers(offset, limit) {
     axios
-      .get("/api/users", {
+      .get("/api/admin/users", {
         params: {
           searchUser: this.state.searchUser,
           offset,
@@ -92,7 +92,7 @@ class Admin extends Component {
 
   disableUserHandler() {
     const id = this.state.disableUserID;
-    axios.post(`/api/users/disable/${id}`).then(response => {
+    axios.post(`/api/admin/users/disable/${id}`).then(response => {
       this.setState(
         produce(draft => {
           const index = draft.users.findIndex(user => user.id === id);

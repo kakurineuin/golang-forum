@@ -49,7 +49,7 @@ var _ = Describe("Admin Handler", func() {
 
 	Describe("Find users", func() {
 		It("should find successfully", func() {
-			req := httptest.NewRequest(http.MethodGet, "/users?offset=0&limit=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/api/admin/users?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			err := adminHandler.FindUsers(c)
@@ -74,7 +74,7 @@ var _ = Describe("Admin Handler", func() {
 
 	Describe("Disable users", func() {
 		It("should disable user successfully", func() {
-			req := httptest.NewRequest(http.MethodPost, "/users/disable/"+userID, nil)
+			req := httptest.NewRequest(http.MethodPost, "/api/admin/users/disable/"+userID, nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("id")

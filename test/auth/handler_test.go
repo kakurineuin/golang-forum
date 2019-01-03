@@ -24,7 +24,7 @@ var _ = Describe("Auth Handler", func() {
 				"email": "test001@xxx.com",
 				"password": "test123"
 			}`
-			req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(requestJSON))
+			req := httptest.NewRequest(http.MethodPost, "/api/auth/register", strings.NewReader(requestJSON))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
@@ -86,7 +86,7 @@ var _ = Describe("Auth Handler", func() {
 				"email": "test001@xxx.com",
 				"password": "test123"
 			}`
-			req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(requestJSON))
+			req := httptest.NewRequest(http.MethodPost, "/api/auth/login", strings.NewReader(requestJSON))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
