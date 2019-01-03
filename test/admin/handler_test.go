@@ -3,15 +3,12 @@ package admin_test
 import (
 	"encoding/json"
 	"github.com/kakurineuin/golang-forum/model"
-	"net/http"
-	"net/http/httptest"
-	"strconv"
-	"time"
-
-	jwt "github.com/dgrijalva/jwt-go"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
 )
 
 var _ = Describe("Admin Handler", func() {
@@ -79,7 +76,6 @@ var _ = Describe("Admin Handler", func() {
 			c := e.NewContext(req, rec)
 			c.SetParamNames("id")
 			c.SetParamValues(userID)
-			c.Set("user", createToken())
 			err := adminHandler.DisableUser(c)
 
 			Expect(err).To(BeNil())
@@ -105,17 +101,3 @@ var _ = Describe("Admin Handler", func() {
 		})
 	})
 })
-
-func createToken() *jwt.Token {
-	token := jwt.New(jwt.SigningMethodHS256)
-	exp := time.Now().Add(time.Hour * 72).Unix()
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = float64(1)
-	claims["username"] = "admin"
-	claims["email"] = "admin@xxx.com"
-	claims["exp"] = exp
-	claims["role"] = "admin"
-	return token
-}
