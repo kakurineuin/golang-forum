@@ -37,7 +37,7 @@ func (h AuthHandler) Register(c echo.Context) (err error) {
 	}
 
 	userProfile.Password = nil // 密碼不能傳到前端。
-	return returnTokenAndUserProfile(c, *userProfile, "註冊成功。")
+	return returnResponse(c, *userProfile, "註冊成功。")
 }
 
 // Login 登入。
@@ -61,7 +61,7 @@ func (h AuthHandler) Login(c echo.Context) (err error) {
 	}
 
 	userProfile.Password = nil // 密碼不能傳到前端。
-	return returnTokenAndUserProfile(c, userProfile, "登入成功。")
+	return returnResponse(c, userProfile, "登入成功。")
 }
 
 func createToken(userProfile model.UserProfile) (string, int64, error) {
@@ -81,7 +81,7 @@ func createToken(userProfile model.UserProfile) (string, int64, error) {
 	return tokenString, exp, err
 }
 
-func returnTokenAndUserProfile(
+func returnResponse(
 	c echo.Context, userProfile model.UserProfile, message string) (err error) {
 	token, exp, err := createToken(userProfile)
 
