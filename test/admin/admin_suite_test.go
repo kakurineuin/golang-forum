@@ -27,7 +27,7 @@ func TestAdmin(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	config.Init("../../config", "config_test")
+	config.Init("../../config", "test")
 
 	dao = database.InitDAO(
 		config.Viper.GetString("database.user"),

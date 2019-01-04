@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	config.Init("./config", "config")
+	config.Init("./config", "development")
 
 	dao := database.InitDAO(
 		config.Viper.GetString("database.user"),
