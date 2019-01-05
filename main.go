@@ -63,7 +63,7 @@ func main() {
 	authGroup.POST("/register", authHandler.Register)
 	authGroup.POST("/login", authHandler.Login)
 
-	// Posts route
+	// Topics route
 	topicService := service.TopicService{DAO: dao}
 	topicHandler := handler.TopicHandler{TopicService: &topicService}
 	topicsGroup := apiGroup.Group("/topics")
@@ -75,8 +75,11 @@ func main() {
 	topicsGroup.PUT("/:category/:id", topicHandler.UpdatePost, jwtMiddleware)
 	topicsGroup.DELETE("/:category/:id", topicHandler.DeletePost, jwtMiddleware)
 
-	// 查詢論壇統計資料。
-	apiGroup.GET("/forum/statistics", topicHandler.FindForumStatistics)
+	// Forum route
+	forumService := service.ForumService{DAO: dao}
+	forumHandler := handler.ForumHandler{ForumService: &forumService}
+	forumGroup := apiGroup.Group("/forum")
+	forumGroup.GET("/statistics", forumHandler.FindForumStatistics)
 
 	// Admin
 	adminService := service.AdminService{DAO: dao}

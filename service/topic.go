@@ -3,77 +3,33 @@ package service
 import (
 	"errors"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/kakurineuin/golang-forum/database"
+	fe "github.com/kakurineuin/golang-forum/error"
 	"github.com/kakurineuin/golang-forum/model"
+	"github.com/kakurineuin/golang-forum/sql"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/kakurineuin/golang-forum/database"
-
-	"github.com/beevik/etree"
-	"github.com/jinzhu/gorm"
-	fe "github.com/kakurineuin/golang-forum/error"
 )
-
-var sqlTemplate = make(map[string]string)
-
-func init() {
-	pwd, _ := os.Getwd()
-	directory := filepath.Base(pwd)
-	sqlTemplatePath := ""
-
-	switch directory {
-	case "golang-forum":
-		sqlTemplatePath = "sql/template.xml"
-	default:
-		// 執行測試時的路徑。
-		sqlTemplatePath = "../../sql/template.xml"
-		fmt.Println("============== directory", directory)
-	}
-
-	doc := etree.NewDocument()
-
-	if err := doc.ReadFromFile(sqlTemplatePath); err != nil {
-		panic(err)
-	}
-
-	sqls := doc.SelectElement("Sqls")
-	for _, sql := range sqls.SelectElements("Sql") {
-		name := sql.SelectAttrValue("name", "")
-		sqlTemplate[name] = sql.Text()
-	}
-}
 
 // TopicService 處理請求的 service。
 type TopicService struct {
 	DAO *database.DAO
 }
 
-// FindForumStatistics 查詢論壇統計資料。
-func (s TopicService) FindForumStatistics() (forumStatistics model.ForumStatistics, err error) {
-	err = s.DAO.DB.Raw(sqlTemplate["FindForumStatistics"]).Scan(&forumStatistics).Error
-
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return model.ForumStatistics{}, err
-	}
-
-	return forumStatistics, nil
-}
-
 // FindTopicsStatistics 查詢主題統計資料。
 func (s TopicService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics model.Statistics, err error) {
 
 	// 查詢 golang 文章統計資料。
-	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
+	err = s.DAO.DB.Raw(sql.SqlTemplate["FindTopicsGolangStatistics"]).Scan(&golangStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return model.Statistics{}, model.Statistics{}, err
 	}
 
 	// 查詢 Node.js 文章統計資料。
-	err = s.DAO.DB.Raw(sqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
+	err = s.DAO.DB.Raw(sql.SqlTemplate["FindTopicsNodeJSStatistics"]).Scan(&nodeJSStatistics).Error
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return model.Statistics{}, model.Statistics{}, err
@@ -93,8 +49,8 @@ func (s TopicService) FindTopics(category, searchTopic string, offset, limit int
 		return topics, 0, err
 	}
 
-	sql := fmt.Sprintf(sqlTemplate["FindTopics"], table, table)
-	rows, err := s.DAO.DB.Raw(sql, searchTopic, offset, limit).Rows()
+	statement := fmt.Sprintf(sql.SqlTemplate["FindTopics"], table, table)
+	rows, err := s.DAO.DB.Raw(statement, searchTopic, offset, limit).Rows()
 	defer rows.Close()
 
 	if err != nil {
@@ -108,8 +64,8 @@ func (s TopicService) FindTopics(category, searchTopic string, offset, limit int
 	}
 
 	// 查詢總筆數。
-	sql = fmt.Sprintf(sqlTemplate["FindTopicsTotalCount"], table, table)
-	row := s.DAO.DB.Raw(sql, searchTopic).Row()
+	statement = fmt.Sprintf(sql.SqlTemplate["FindTopicsTotalCount"], table, table)
+	row := s.DAO.DB.Raw(statement, searchTopic).Row()
 	row.Scan(&totalCount)
 	return
 }
@@ -129,8 +85,8 @@ func (s TopicService) FindTopic(category string, id, offset, limit int) (findPos
 		return nil, 0, err
 	}
 
-	sql := fmt.Sprintf(sqlTemplate["FindTopic"], table, table)
-	rows, err := s.DAO.DB.Raw(sql, id, id, offset, limit).Rows()
+	statement := fmt.Sprintf(sql.SqlTemplate["FindTopic"], table, table)
+	rows, err := s.DAO.DB.Raw(statement, id, id, offset, limit).Rows()
 	defer rows.Close()
 
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
@@ -144,8 +100,8 @@ func (s TopicService) FindTopic(category string, id, offset, limit int) (findPos
 	}
 
 	// 查詢總筆數。
-	sql = fmt.Sprintf(sqlTemplate["FindTopicTotalCount"], table, table)
-	row := s.DAO.DB.Raw(sql, id, id).Row()
+	statement = fmt.Sprintf(sql.SqlTemplate["FindTopicTotalCount"], table, table)
+	row := s.DAO.DB.Raw(statement, id, id).Row()
 	row.Scan(&totalCount)
 	return
 }

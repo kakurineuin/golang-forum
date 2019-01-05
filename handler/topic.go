@@ -15,19 +15,6 @@ type TopicHandler struct {
 	TopicService *service.TopicService
 }
 
-// FindForumStatistics 查詢論壇統計資料。
-func (h TopicHandler) FindForumStatistics(c echo.Context) (err error) {
-	forumStatistics, err := h.TopicService.FindForumStatistics()
-
-	if err != nil {
-		return
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"forumStatistics": forumStatistics,
-	})
-}
-
 // FindTopicsStatistics 查詢主題統計資料。
 func (h TopicHandler) FindTopicsStatistics(c echo.Context) (err error) {
 	golangStatistics, nodeJSStatistics, err := h.TopicService.FindTopicsStatistics()
