@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// TopicHandler 處理請求的 handler。
+// TopicHandler 處理主題相關功能請求的 handler。
 type TopicHandler struct {
 	TopicService *service.TopicService
 }

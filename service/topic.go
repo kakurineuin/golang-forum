@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// TopicService 處理請求的 service。
+// TopicService 處理主題相關功能請求的 service。
 type TopicService struct {
 	DAO *database.DAO
 }

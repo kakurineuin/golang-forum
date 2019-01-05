@@ -14,7 +14,7 @@ import (
 // roleUser 表示角色是一般使用者。
 const roleUser string = "user"
 
-// AuthService 處理請求的 service。
+// AuthService 處理 auth 相關功能請求的 service。
 type AuthService struct {
 	DAO *database.DAO
 }

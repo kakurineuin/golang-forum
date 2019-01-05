@@ -8,7 +8,7 @@ import (
 	"github.com/kakurineuin/golang-forum/database"
 )
 
-// AdminService 處理請求的 service。
+// AdminService 處理 admin 相關功能請求的 service。
 type AdminService struct {
 	DAO *database.DAO
 }

@@ -13,7 +13,7 @@ import (
 // JwtSecret JWT secret key。
 const JwtSecret = "die_meere"
 
-// AuthHandler 處理請求的 handler。
+// AuthHandler 處理 auth 相關功能請求的 handler。
 type AuthHandler struct {
 	AuthService *service.AuthService
 }

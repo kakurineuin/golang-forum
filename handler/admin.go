@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// AdminHandler 處理請求的 handler。
+// AdminHandler 處理 admin 相關功能請求的 handler。
 type AdminHandler struct {
 	AdminService *service.AdminService
 }
