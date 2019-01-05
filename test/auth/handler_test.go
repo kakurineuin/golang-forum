@@ -14,14 +14,34 @@ import (
 )
 
 var _ = Describe("Auth Handler", func() {
+	BeforeEach(func() {
+		username := "test001"
+		email := "test001@xxx.com"
+		password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
+		role := "user"
+		isDisabled := 0
+		test001 := model.UserProfile{
+			Username:   &username,
+			Email:      &email,
+			Password:   &password,
+			Role:       &role,
+			IsDisabled: &isDisabled,
+		}
+
+		if err := dao.DB.Table("user_profile").Create(&test001).Error; err != nil {
+			panic(err)
+		}
+	})
+
+	AfterEach(func() {
+		dao.DB.Delete(model.UserProfile{})
+	})
+
 	Describe("Register", func() {
-		AfterEach(func() {
-			dao.DB.Delete(model.UserProfile{})
-		})
 		It("should register successfully", func() {
 			requestJSON := `{
-				"username": "test001",
-				"email": "test001@xxx.com",
+				"username": "test002",
+				"email": "test002@xxx.com",
 				"password": "test123"
 			}`
 			req := httptest.NewRequest(http.MethodPost, "/api/auth/register", strings.NewReader(requestJSON))
@@ -47,8 +67,8 @@ var _ = Describe("Auth Handler", func() {
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
 					"ID":         PointTo(BeNumerically(">=", 0)),
-					"Username":   PointTo(Not(BeEmpty())),
-					"Email":      PointTo(Not(BeEmpty())),
+					"Username":   PointTo(Equal("test002")),
+					"Email":      PointTo(Equal("test002@xxx.com")),
 					"Password":   BeNil(), // 密碼不能傳到前端。
 					"Role":       PointTo(Equal("user")),
 					"IsDisabled": PointTo(BeNumerically("==", 0)),
@@ -60,27 +80,6 @@ var _ = Describe("Auth Handler", func() {
 	})
 
 	Describe("Login", func() {
-		BeforeEach(func() {
-			username := "test001"
-			email := "test001@xxx.com"
-			password := "$2a$10$041tGlbd86T90uNSGbvkw.tSExCrlKmy37QoUGl23mfW7YGJjUVjO"
-			role := "user"
-			isDisabled := 0
-			test001 := model.UserProfile{
-				Username:   &username,
-				Email:      &email,
-				Password:   &password,
-				Role:       &role,
-				IsDisabled: &isDisabled,
-			}
-
-			if err := dao.DB.Table("user_profile").Create(&test001).Error; err != nil {
-				panic(err)
-			}
-		})
-		AfterEach(func() {
-			dao.DB.Delete(model.UserProfile{})
-		})
 		It("should login successfully", func() {
 			requestJSON := `{
 				"email": "test001@xxx.com",
@@ -109,8 +108,8 @@ var _ = Describe("Auth Handler", func() {
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
 					"ID":         PointTo(BeNumerically(">=", 0)),
-					"Username":   PointTo(Not(BeEmpty())),
-					"Email":      PointTo(Not(BeEmpty())),
+					"Username":   PointTo(Equal("test001")),
+					"Email":      PointTo(Equal("test001@xxx.com")),
 					"Password":   BeNil(), // 密碼不能傳到前端。
 					"Role":       PointTo(Equal("user")),
 					"IsDisabled": PointTo(BeNumerically("==", 0)),

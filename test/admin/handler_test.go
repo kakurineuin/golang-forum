@@ -86,14 +86,15 @@ var _ = Describe("Admin Handler", func() {
 				model.User `json:"user"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
+			intUserID, _ := strconv.Atoi(userID)
 
 			Expect(err).To(BeNil())
 			Expect(result).To(MatchAllFields(Fields{
 				"User": MatchAllFields(Fields{
-					"ID":         Not(BeNil()),
-					"Username":   Not(BeNil()),
-					"Email":      Not(BeNil()),
-					"Role":       Not(BeNil()),
+					"ID":         PointTo(Equal(intUserID)),
+					"Username":   PointTo(Equal("test005")),
+					"Email":      PointTo(Equal("test005@xxx.com")),
+					"Role":       PointTo(Equal("user")),
 					"IsDisabled": PointTo(BeNumerically("==", 1)),
 					"CreatedAt":  Not(BeNil()),
 				}),
