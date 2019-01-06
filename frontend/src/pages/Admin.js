@@ -16,7 +16,7 @@ class Admin extends Component {
     searchUser: "", // 請求參數：搜尋的使用者名稱。
     paginationKey: Math.random(), // 用來觸發分頁重新 render 並查詢資料。
     disableUserModalActivate: false, // 是否顯示停用使用者對話框。
-    disableUserID: null // 停用使用者的 id。
+    disableUserId: null // 停用使用者的 id。
   };
 
   inputSearchUserChangeHandler(value) {
@@ -74,7 +74,7 @@ class Admin extends Component {
   openDisableUserModal(id) {
     this.setState(
       produce(draft => {
-        draft.disableUserID = id;
+        draft.disableUserId = id;
         draft.disableUserModalActivate = true;
       })
     );
@@ -84,14 +84,14 @@ class Admin extends Component {
   closeDisableUserModal() {
     this.setState(
       produce(draft => {
-        draft.disableUserID = null;
+        draft.disableUserId = null;
         draft.disableUserModalActivate = false;
       })
     );
   }
 
   disableUserHandler() {
-    const id = this.state.disableUserID;
+    const id = this.state.disableUserId;
     axios.post(`/api/admin/users/disable/${id}`).then(response => {
       this.setState(
         produce(draft => {

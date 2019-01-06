@@ -18,7 +18,7 @@ import (
 )
 
 var _ = Describe("Topic Handler", func() {
-	var userProfileID int     // 使用者 ID。
+	var userProfileId int     // 使用者 Id。
 	var postGolang model.Post // post_golang 文章。
 
 	BeforeEach(func() {
@@ -38,14 +38,14 @@ var _ = Describe("Topic Handler", func() {
 			panic(err)
 		}
 
-		userProfileID = *user1.ID
+		userProfileId = *user1.Id
 
 		// 新增文章。
 		for _, table := range []string{"post_golang", "post_nodejs"} {
 			topic := "測試主題001"
 			content := "內容..."
 			post1 := model.Post{
-				UserProfileID: &userProfileID,
+				UserProfileId: &userProfileId,
 				Topic:         &topic,
 				Content:       &content,
 			}
@@ -59,8 +59,8 @@ var _ = Describe("Topic Handler", func() {
 			}
 
 			reply1 := model.Post{
-				UserProfileID: &userProfileID,
-				ReplyPostID:   post1.ID,
+				UserProfileId: &userProfileId,
+				ReplyPostId:   post1.Id,
 				Topic:         &topic,
 				Content:       &content,
 			}
@@ -143,7 +143,7 @@ var _ = Describe("Topic Handler", func() {
 
 	Describe("Find topic", func() {
 		It("should find successfully", func() {
-			id := strconv.Itoa(*postGolang.ID)
+			id := strconv.Itoa(*postGolang.Id)
 			req := httptest.NewRequest(http.MethodGet, "/api/topics/golang/"+id+"?offset=0&limit=10", nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
@@ -172,8 +172,8 @@ var _ = Describe("Topic Handler", func() {
 	Describe("Create post", func() {
 		It("should create successfully", func() {
 			requestJSON := `{
-				"userProfileID": 1,
-				"replyPostID": null,
+				"userProfileId": 1,
+				"replyPostId": null,
 				"topic": "測試新增文章",
 				"content": "測試新增文章"
 			}`
@@ -197,9 +197,9 @@ var _ = Describe("Topic Handler", func() {
 			Expect(err).To(BeNil())
 			Expect(result).To(MatchAllFields(Fields{
 				"Post": MatchAllFields(Fields{
-					"ID":            PointTo(BeNumerically(">=", 0)),
-					"UserProfileID": PointTo(BeNumerically("==", 1)),
-					"ReplyPostID":   BeNil(),
+					"Id":            PointTo(BeNumerically(">=", 0)),
+					"UserProfileId": PointTo(BeNumerically("==", 1)),
+					"ReplyPostId":   BeNil(),
 					"Topic":         PointTo(Equal("測試新增文章")),
 					"Content":       PointTo(Equal("測試新增文章")),
 					"CreatedAt":     Not(BeNil()),
@@ -212,7 +212,7 @@ var _ = Describe("Topic Handler", func() {
 
 	Describe("Update post", func() {
 		It("should update successfully", func() {
-			id := strconv.Itoa(*postGolang.ID)
+			id := strconv.Itoa(*postGolang.Id)
 			requestJSON := `{
 				"content": "測試修改文章"
 			}`
@@ -222,7 +222,7 @@ var _ = Describe("Topic Handler", func() {
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
-			c.Set("user", createToken(userProfileID))
+			c.Set("user", createToken(userProfileId))
 			err := topicHandler.UpdatePost(c)
 
 			Expect(err).To(BeNil())
@@ -237,9 +237,9 @@ var _ = Describe("Topic Handler", func() {
 			Expect(err).To(BeNil())
 			Expect(result).To(MatchAllFields(Fields{
 				"Post": MatchAllFields(Fields{
-					"ID":            PointTo(BeNumerically("==", *postGolang.ID)),
-					"UserProfileID": PointTo(BeNumerically("==", *postGolang.UserProfileID)),
-					"ReplyPostID":   BeNil(),
+					"Id":            PointTo(BeNumerically("==", *postGolang.Id)),
+					"UserProfileId": PointTo(BeNumerically("==", *postGolang.UserProfileId)),
+					"ReplyPostId":   BeNil(),
 					"Topic":         PointTo(Equal(*postGolang.Topic)),
 					"Content":       PointTo(Equal("測試修改文章")),
 					"CreatedAt":     Not(BeNil()),
@@ -252,13 +252,13 @@ var _ = Describe("Topic Handler", func() {
 
 	Describe("Delete post", func() {
 		It("should delete successfully", func() {
-			id := strconv.Itoa(*postGolang.ID)
+			id := strconv.Itoa(*postGolang.Id)
 			req := httptest.NewRequest(http.MethodDelete, "/api/topics/golang/"+id, nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("category", "id")
 			c.SetParamValues("golang", id)
-			c.Set("user", createToken(userProfileID))
+			c.Set("user", createToken(userProfileId))
 			err := topicHandler.DeletePost(c)
 
 			Expect(err).To(BeNil())
@@ -273,9 +273,9 @@ var _ = Describe("Topic Handler", func() {
 			Expect(err).To(BeNil())
 			Expect(result).To(MatchAllFields(Fields{
 				"Post": MatchAllFields(Fields{
-					"ID":            PointTo(BeNumerically("==", *postGolang.ID)),
-					"UserProfileID": PointTo(BeNumerically("==", *postGolang.UserProfileID)),
-					"ReplyPostID":   BeNil(),
+					"Id":            PointTo(BeNumerically("==", *postGolang.Id)),
+					"UserProfileId": PointTo(BeNumerically("==", *postGolang.UserProfileId)),
+					"ReplyPostId":   BeNil(),
 					"Topic":         PointTo(Equal(*postGolang.Topic)),
 					"Content":       PointTo(Equal("此篇文章已被刪除。")),
 					"CreatedAt":     Not(BeNil()),
@@ -287,13 +287,13 @@ var _ = Describe("Topic Handler", func() {
 	})
 })
 
-func createToken(userProfileID int) *jwt.Token {
+func createToken(userProfileId int) *jwt.Token {
 	token := jwt.New(jwt.SigningMethodHS256)
 	exp := time.Now().Add(time.Hour * 72).Unix()
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = float64(userProfileID)
+	claims["id"] = float64(userProfileId)
 	claims["username"] = "admin"
 	claims["email"] = "admin@xxx.com"
 	claims["exp"] = exp

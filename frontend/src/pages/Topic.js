@@ -47,10 +47,10 @@ class Topic extends Component {
     console.log("state", this.state);
     axios
       .post(`/api/topics/${this.props.match.params.category}`, {
-        userProfileID: this.props.user.id,
+        userProfileId: this.props.user.id,
         topic: this.state.posts[0].topic,
         content: this.state.content,
-        replyPostID: parseInt(this.props.match.params.id, 10)
+        replyPostId: parseInt(this.props.match.params.id, 10)
       })
       .then(response => {
         console.log("create reply response", response);
@@ -88,9 +88,9 @@ class Topic extends Component {
     console.log("props", this.props);
     console.log("state", this.state);
     const category = this.props.match.params.category;
-    const postID = this.state.postOnUpdate.id;
+    const postId = this.state.postOnUpdate.id;
     axios
-      .put(`/api/topics/${category}/${postID}`, {
+      .put(`/api/topics/${category}/${postId}`, {
         content: this.state.postOnUpdate.content
       })
       .then(response => {
@@ -134,8 +134,8 @@ class Topic extends Component {
     console.log("props", this.props);
     console.log("state", this.state);
     const category = this.props.match.params.category;
-    const postID = this.state.postOnDelete.id;
-    axios.delete(`/api/topics/${category}/${postID}`).then(response => {
+    const postId = this.state.postOnDelete.id;
+    axios.delete(`/api/topics/${category}/${postId}`).then(response => {
       console.log("delete post response", response);
       const deletedPost = response.data.post;
       this.setState(
@@ -152,7 +152,7 @@ class Topic extends Component {
   }
 
   // 查詢此主題文章。
-  findPostsByTopicID(offset, limit) {
+  findPostsByTopicId(offset, limit) {
     const category = this.props.match.params.category;
     const id = this.props.match.params.id;
     axios
@@ -206,7 +206,7 @@ class Topic extends Component {
       );
     }
 
-    const postID = parseInt(this.props.match.params.id, 10);
+    const postId = parseInt(this.props.match.params.id, 10);
     const posts = this.state.posts.map((post, index) => {
       let updateButton = null;
       let deleteButton = null;
@@ -256,7 +256,7 @@ class Topic extends Component {
       // 若是主題文章，顯示主題。
       content = (
         <td>
-          {post.id === postID ? (
+          {post.id === postId ? (
             <div>
               <h1 className="title">{post.topic}</h1>
               <hr />
@@ -314,7 +314,7 @@ class Topic extends Component {
         <Pagination
           key={this.state.paginationKey}
           totalCount={this.state.totalCount}
-          findData={(offset, limit) => this.findPostsByTopicID(offset, limit)}
+          findData={(offset, limit) => this.findPostsByTopicId(offset, limit)}
         />
         <br />
         <nav className="level">

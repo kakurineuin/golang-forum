@@ -70,7 +70,7 @@ func createToken(userProfile model.UserProfile) (string, int64, error) {
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = userProfile.ID
+	claims["id"] = userProfile.Id
 	claims["username"] = userProfile.Username
 	claims["email"] = userProfile.Email
 	claims["role"] = userProfile.Role

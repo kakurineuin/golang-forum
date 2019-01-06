@@ -66,7 +66,7 @@ var _ = Describe("Auth Handler", func() {
 				"Token": Not(BeEmpty()),
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
-					"ID":         PointTo(BeNumerically(">=", 0)),
+					"Id":         PointTo(BeNumerically(">=", 0)),
 					"Username":   PointTo(Equal("test002")),
 					"Email":      PointTo(Equal("test002@xxx.com")),
 					"Password":   BeNil(), // 密碼不能傳到前端。
@@ -107,7 +107,7 @@ var _ = Describe("Auth Handler", func() {
 				"Token": Not(BeEmpty()),
 				"Exp":   BeNumerically(">=", 0),
 				"UserProfile": MatchAllFields(Fields{
-					"ID":         PointTo(BeNumerically(">=", 0)),
+					"Id":         PointTo(BeNumerically(">=", 0)),
 					"Username":   PointTo(Equal("test001")),
 					"Email":      PointTo(Equal("test001@xxx.com")),
 					"Password":   BeNil(), // 密碼不能傳到前端。

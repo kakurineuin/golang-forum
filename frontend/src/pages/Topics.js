@@ -41,7 +41,7 @@ class Topics extends Component {
   createTopicHandler() {
     axios
       .post(`/api/topics/${this.props.match.params.category}`, {
-        userProfileID: this.props.user.id,
+        userProfileId: this.props.user.id,
         topic: this.state.topic,
         content: this.state.content
       })

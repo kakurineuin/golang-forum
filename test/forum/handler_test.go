@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("Forum Handler", func() {
-	var userProfileID int // 使用者 ID。
+	var userProfileId int // 使用者 Id。
 
 	BeforeEach(func() {
 		// 新增一名使用者。
@@ -30,14 +30,14 @@ var _ = Describe("Forum Handler", func() {
 			panic(err)
 		}
 
-		userProfileID = *user1.ID
+		userProfileId = *user1.Id
 
 		// 新增文章。
 		for _, table := range []string{"post_golang", "post_nodejs"} {
 			topic := "測試主題001"
 			content := "內容..."
 			post1 := model.Post{
-				UserProfileID: &userProfileID,
+				UserProfileId: &userProfileId,
 				Topic:         &topic,
 				Content:       &content,
 			}
@@ -47,8 +47,8 @@ var _ = Describe("Forum Handler", func() {
 			}
 
 			reply1 := model.Post{
-				UserProfileID: &userProfileID,
-				ReplyPostID:   post1.ID,
+				UserProfileId: &userProfileId,
+				ReplyPostId:   post1.Id,
 				Topic:         &topic,
 				Content:       &content,
 			}

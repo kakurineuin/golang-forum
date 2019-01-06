@@ -107,7 +107,7 @@ func (s TopicService) FindTopic(category string, id, offset, limit int) (findPos
 }
 
 // UpdatePost 修改文章。
-func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userID int) (post model.Post, err error) {
+func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userId int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
@@ -125,7 +125,7 @@ func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.Pos
 	}
 
 	// 不能修改別人的文章。
-	if *post.UserProfileID != userID {
+	if *post.UserProfileId != userId {
 		return model.Post{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "不能修改別人的文章。",
@@ -146,7 +146,7 @@ func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.Pos
 }
 
 // DeletePost 刪除文章，不是真的刪除，而是修改文章內容和刪除時間欄位。
-func (s TopicService) DeletePost(category string, id, userID int) (post model.Post, err error) {
+func (s TopicService) DeletePost(category string, id, userId int) (post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
@@ -156,14 +156,14 @@ func (s TopicService) DeletePost(category string, id, userID int) (post model.Po
 	}
 
 	user := model.UserProfile{}
-	err = s.DAO.DB.First(&user, userID).Error
+	err = s.DAO.DB.First(&user, userId).Error
 
 	if err != nil {
 		return model.Post{}, err
 	}
 
 	// 不是系統管理員則不能刪除別人的文章。
-	if *user.Role != "admin" && *post.UserProfileID != userID {
+	if *user.Role != "admin" && *post.UserProfileId != userId {
 		return model.Post{}, fe.CustomError{
 			HTTPStatusCode: http.StatusBadRequest,
 			Message:        "不能刪除別人的文章。",

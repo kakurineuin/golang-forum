@@ -80,7 +80,7 @@ func (h TopicHandler) CreatePost(c echo.Context) (err error) {
 
 	message := ""
 
-	if post.ReplyPostID == nil {
+	if post.ReplyPostId == nil {
 		message = "新增主題成功。"
 	} else {
 		message = "回覆成功。"
@@ -146,7 +146,7 @@ func (h TopicHandler) UpdatePost(c echo.Context) (err error) {
 		return
 	}
 
-	post, err := h.TopicService.UpdatePost(c.Param("category"), id, *postOnUpdate, getUserID(c))
+	post, err := h.TopicService.UpdatePost(c.Param("category"), id, *postOnUpdate, getUserId(c))
 
 	if err != nil {
 		return
@@ -166,7 +166,7 @@ func (h TopicHandler) DeletePost(c echo.Context) (err error) {
 		return
 	}
 
-	post, err := h.TopicService.DeletePost(c.Param("category"), id, getUserID(c))
+	post, err := h.TopicService.DeletePost(c.Param("category"), id, getUserId(c))
 
 	if err != nil {
 		return
@@ -178,7 +178,7 @@ func (h TopicHandler) DeletePost(c echo.Context) (err error) {
 	})
 }
 
-func getUserID(c echo.Context) int {
+func getUserId(c echo.Context) int {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	return int(claims["id"].(float64))

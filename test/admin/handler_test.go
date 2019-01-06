@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Describe("Admin Handler", func() {
-	userID := ""
+	userId := ""
 
 	BeforeEach(func() {
 
@@ -35,7 +35,7 @@ var _ = Describe("Admin Handler", func() {
 			}
 
 			if i == 4 {
-				userID = strconv.Itoa(*newUser.ID)
+				userId = strconv.Itoa(*newUser.Id)
 			}
 		}
 	})
@@ -71,11 +71,11 @@ var _ = Describe("Admin Handler", func() {
 
 	Describe("Disable users", func() {
 		It("should disable user successfully", func() {
-			req := httptest.NewRequest(http.MethodPost, "/api/admin/users/disable/"+userID, nil)
+			req := httptest.NewRequest(http.MethodPost, "/api/admin/users/disable/"+userId, nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 			c.SetParamNames("id")
-			c.SetParamValues(userID)
+			c.SetParamValues(userId)
 			err := adminHandler.DisableUser(c)
 
 			Expect(err).To(BeNil())
@@ -86,12 +86,12 @@ var _ = Describe("Admin Handler", func() {
 				model.User `json:"user"`
 			}
 			err = json.Unmarshal([]byte(recBody), &result)
-			intUserID, _ := strconv.Atoi(userID)
+			intUserId, _ := strconv.Atoi(userId)
 
 			Expect(err).To(BeNil())
 			Expect(result).To(MatchAllFields(Fields{
 				"User": MatchAllFields(Fields{
-					"ID":         PointTo(Equal(intUserID)),
+					"Id":         PointTo(Equal(intUserId)),
 					"Username":   PointTo(Equal("test005")),
 					"Email":      PointTo(Equal("test005@xxx.com")),
 					"Role":       PointTo(Equal("user")),
