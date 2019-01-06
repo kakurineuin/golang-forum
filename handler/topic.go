@@ -114,7 +114,6 @@ func (h TopicHandler) FindTopic(c echo.Context) (err error) {
 	}
 
 	c.Logger().Infof("category: %v, id: %v, offset: %v, limit: %v", category, id, offset, limit)
-
 	findPostsResults, totalCount, err := h.TopicService.FindTopic(category, id, offset, limit)
 
 	if err != nil {
