@@ -58,15 +58,11 @@ class App extends Component {
       }
     }
 
-    let myConfigs = null;
+    let username = null;
     let buttons = null;
 
     if (this.props.user) {
-      myConfigs = (
-        <Link to="/my/configs" className="navbar-item">
-          {this.props.user.username}
-        </Link>
-      );
+      username = <div className="navbar-item">{this.props.user.username}</div>;
       buttons = (
         <div className="buttons">
           <button
@@ -115,7 +111,7 @@ class App extends Component {
               ) : null}
             </div>
             <div className="navbar-end">
-              {myConfigs}
+              {username}
               <div className="navbar-item">{buttons}</div>
             </div>
           </div>
