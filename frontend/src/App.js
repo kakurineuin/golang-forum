@@ -11,6 +11,7 @@ import * as authActions from "./modules/auth";
 import * as messageActions from "./modules/message";
 import "./App.css";
 import logo from "./assets/logo.png";
+import Spinner from "./components/spinner/Spinner";
 
 /**
   主程式。
@@ -88,6 +89,7 @@ class App extends Component {
 
     return (
       <div>
+        <Spinner />
         <nav className="navbar" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
             <Link to="/" className="navbar-item">
