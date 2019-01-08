@@ -38,6 +38,18 @@ var _ = Describe("Auth Handler", func() {
 	})
 
 	Describe("Register", func() {
+		It("should fail to register if some parameters are missing", func() {
+			requestJSON := "{}"
+			req := httptest.NewRequest(http.MethodPost, "/api/auth/register", strings.NewReader(requestJSON))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			err := authHandler.Register(c)
+
+			Expect(err).To(BeNil())
+			Expect(rec.Code).To(Equal(http.StatusBadRequest))
+		})
+
 		It("should register successfully", func() {
 			requestJSON := `{
 				"username": "test002",
