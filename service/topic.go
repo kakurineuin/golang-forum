@@ -10,7 +10,6 @@ import (
 	"github.com/kakurineuin/golang-forum/sql"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // TopicService 處理主題相關功能請求的 service。
@@ -171,13 +170,26 @@ func (s TopicService) DeletePost(category string, id, userId int) (post model.Po
 	}
 
 	// 不是真的刪除，而是修改文章內容並更新刪除時間欄位。
-	content := "此篇文章已被刪除。"
-	post.Content = &content
-	deleteAt := time.Now()
-	post.DeletedAt = &deleteAt
+	// deleteAt := time.Now()
+	// post.DeletedAt = &deleteAt
 	err = s.DAO.WithinTransaction(func(tx *gorm.DB) error {
-		return tx.Table("post_" + category).Save(&post).Error
+		content := "此篇文章已被刪除。"
+		post.Content = &content
+		txErr := tx.Table("post_" + category).Save(&post).Error
+
+		if txErr != nil {
+			return txErr
+		}
+
+		return tx.Table("post_" + category).Delete(&post).Error
 	})
+
+	if err != nil {
+		return model.Post{}, err
+	}
+
+	// 查詢 soft deleted 紀錄。
+	err = s.DAO.DB.Unscoped().Table("post_"+category).First(&post, id).Error
 
 	if err != nil {
 		return model.Post{}, err
