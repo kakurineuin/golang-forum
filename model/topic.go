@@ -30,7 +30,7 @@ type Post struct {
 	UserProfileId *int       `json:"userProfileId"`
 	ReplyPostId   *int       `json:"replyPostId"`
 	Topic         *string    `json:"topic" valid:"required~主題必填。,stringlength(1|30)~主題長度須在1至30之間。"`
-	Content       *string    `json:"content" valid:"required~內文必填。,stringlength(1|500)~內文長度須在1至500之間。"`
+	Content       *string    `json:"content" valid:"required~內文必填。,stringlength(1|2000)~內文長度須在1至2000之間。"`
 	CreatedAt     *time.Time `json:"createdAt"`
 	UpdatedAt     *time.Time `json:"updatedAt"`
 	DeletedAt     *time.Time `json:"deletedAt"`
@@ -50,5 +50,5 @@ type FindPostsResult struct {
 
 // PostOnUpdate 修改的文章。
 type PostOnUpdate struct {
-	Content *string `json:"content" valid:"required~內文必填。,stringlength(1|500)~內文長度須在1至500之間。"`
+	Content *string `json:"content" valid:"required~內文必填。,stringlength(1|2000)~內文長度須在1至2000之間。"`
 }
