@@ -2,3 +2,6 @@
 user = "forum_admin"
 password = "test123"
 dbname = "forum_test"
+
+[jwt]
+secret = "die_meere"

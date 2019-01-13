@@ -54,11 +54,15 @@ func main() {
 		HTML5:  true,
 	}))
 
+	jwtSecret := config.Viper.GetString("jwt.secret")
 	apiGroup := e.Group("/api")
 
 	// Auth route
 	authService := service.AuthService{DAO: dao}
-	authHandler := handler.AuthHandler{AuthService: &authService}
+	authHandler := handler.AuthHandler{
+		AuthService: &authService,
+		JwtSecret:   jwtSecret,
+	}
 	authGroup := apiGroup.Group("/auth")
 	authGroup.POST("/register", authHandler.Register)
 	authGroup.POST("/login", authHandler.Login)
@@ -70,7 +74,7 @@ func main() {
 	topicsGroup.GET("/statistics", topicHandler.FindTopicsStatistics)
 	topicsGroup.GET("/:category/:id", topicHandler.FindTopic)
 	topicsGroup.GET("/:category", topicHandler.FindTopics)
-	jwtMiddleware := middleware.JWT([]byte(handler.JwtSecret))
+	jwtMiddleware := middleware.JWT([]byte(jwtSecret))
 	topicsGroup.POST("/:category", topicHandler.CreatePost, jwtMiddleware)
 	topicsGroup.PUT("/:category/:id", topicHandler.UpdatePost, jwtMiddleware)
 	topicsGroup.DELETE("/:category/:id", topicHandler.DeletePost, jwtMiddleware)

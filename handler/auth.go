@@ -10,12 +10,10 @@ import (
 	"github.com/labstack/echo"
 )
 
-// JwtSecret JWT secret key。
-const JwtSecret = "die_meere"
-
 // AuthHandler 處理 auth 相關功能請求的 handler。
 type AuthHandler struct {
 	AuthService *service.AuthService
+	JwtSecret   string
 }
 
 // Register 註冊。
@@ -37,7 +35,7 @@ func (h AuthHandler) Register(c echo.Context) (err error) {
 	}
 
 	userProfile.Password = nil // 密碼不能傳到前端。
-	return returnResponse(c, *userProfile, "註冊成功。")
+	return returnResponse(c, *userProfile, "註冊成功。", h.JwtSecret)
 }
 
 // Login 登入。
@@ -61,10 +59,10 @@ func (h AuthHandler) Login(c echo.Context) (err error) {
 	}
 
 	userProfile.Password = nil // 密碼不能傳到前端。
-	return returnResponse(c, userProfile, "登入成功。")
+	return returnResponse(c, userProfile, "登入成功。", h.JwtSecret)
 }
 
-func createToken(userProfile model.UserProfile) (string, int64, error) {
+func createToken(userProfile model.UserProfile, jwtSecret string) (string, int64, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	exp := time.Now().Add(time.Hour * 72).Unix()
 
@@ -77,13 +75,13 @@ func createToken(userProfile model.UserProfile) (string, int64, error) {
 	claims["exp"] = exp
 
 	// Generate encoded token.
-	tokenString, err := token.SignedString([]byte(JwtSecret))
+	tokenString, err := token.SignedString([]byte(jwtSecret))
 	return tokenString, exp, err
 }
 
 func returnResponse(
-	c echo.Context, userProfile model.UserProfile, message string) (err error) {
-	token, exp, err := createToken(userProfile)
+	c echo.Context, userProfile model.UserProfile, message, jwtSecret string) (err error) {
+	token, exp, err := createToken(userProfile, jwtSecret)
 
 	if err != nil {
 		return
