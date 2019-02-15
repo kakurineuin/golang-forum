@@ -64,7 +64,7 @@ func (h AuthHandler) Login(c echo.Context) (err error) {
 
 func createToken(userProfile model.UserProfile, jwtSecret string) (string, int64, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	exp := time.Now().Add(time.Hour * 72).Unix()
+	exp := time.Now().Add(time.Hour * 8760).Unix()
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
