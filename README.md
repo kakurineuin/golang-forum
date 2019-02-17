@@ -1,4 +1,4 @@
-使用 Golang、Echo、GROM、React 建立的論壇網站。
+使用 Golang、Echo、GORM、React 建立的論壇網站。
 
 Golang
 https://golang.org
@@ -6,7 +6,7 @@ https://golang.org
 Echo
 https://echo.labstack.com
 
-GROM
+GORM
 http://gorm.io
 
 React
