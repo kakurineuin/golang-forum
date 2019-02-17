@@ -12,14 +12,22 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
+	"os"
 )
 
 func main() {
-	config.Init("./config", "development")
+	env := os.Getenv("APP_ENV")
+
+	if env == "production" {
+		config.Init("./config", "production")
+	} else {
+		config.Init("./config", "development")
+	}
 
 	dao := database.InitDAO(
 		config.Viper.GetString("database.user"),
 		config.Viper.GetString("database.password"),
+		config.Viper.GetString("database.host"),
 		config.Viper.GetString("database.dbname"),
 	)
 
@@ -93,5 +101,11 @@ func main() {
 	adminGroup.GET("/users", adminHandler.FindUsers)
 	adminGroup.POST("/users/disable/:id", adminHandler.DisableUser)
 
-	e.Logger.Fatal(e.Start(":1323"))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "1323"
+	}
+
+	e.Logger.Fatal(e.Start(":" + port))
 }

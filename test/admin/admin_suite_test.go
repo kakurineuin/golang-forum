@@ -32,6 +32,7 @@ var _ = BeforeSuite(func() {
 	dao = database.InitDAO(
 		config.Viper.GetString("database.user"),
 		config.Viper.GetString("database.password"),
+		config.Viper.GetString("database.host"),
 		config.Viper.GetString("database.dbname"),
 	)
 

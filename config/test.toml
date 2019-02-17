@@ -1,6 +1,7 @@
 [database]
 user = "forum_admin"
 password = "test123"
+host = "localhost"
 dbname = "forum_test"
 
 [jwt]

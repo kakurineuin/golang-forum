@@ -18,10 +18,10 @@ type (
 )
 
 // InitDAO 初始化資料庫存取物件。
-func InitDAO(user string, password string, dbname string) *DAO {
+func InitDAO(user, password, host, dbname string) *DAO {
 	var err error
-	dbSource := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
-		user, password, dbname)
+	dbSource := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		user, password, host, dbname)
 	db, err = gorm.Open("mysql", dbSource)
 
 	if err != nil {
