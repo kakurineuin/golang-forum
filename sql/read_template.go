@@ -16,7 +16,7 @@ func init() {
 	sqlTemplatePath := ""
 
 	switch directory {
-	case "golang-forum":
+	case "golang-forum", "app":
 		sqlTemplatePath = "sql/template.xml"
 	default:
 		// 執行測試時的路徑。
