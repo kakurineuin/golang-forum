@@ -12,9 +12,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Golang
-build/
-
 # Binaries for programs and plugins
 *.exe
 *.exe~
