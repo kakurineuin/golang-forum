@@ -37,3 +37,121 @@ https://reactjs.org
 - vendor：依賴函式庫的放置目錄。
 - glide.yaml：依賴函式庫的配置檔。
 - main.go：專案程式碼的進入點。
+
+資料表說明
+===
+### Golang 文章資料表
+    CREATE TABLE `post_golang` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主鍵',
+      `user_profile_id` int(11) NOT NULL COMMENT '發文者的使用者資料表主鍵',
+      `reply_post_id` int(11) DEFAULT NULL COMMENT '回覆目標文章的主鍵',
+      `topic` varchar(30) NOT NULL COMMENT '主題',
+      `content` varchar(20000) NOT NULL COMMENT '內文',
+      `created_at` datetime NOT NULL COMMENT '建立時間',
+      `updated_at` datetime DEFAULT NULL COMMENT '修改時間',
+      `deleted_at` datetime DEFAULT NULL COMMENT '刪除時間',
+      PRIMARY KEY (`id`)
+    ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Golang 文章資料表'
+
+### Node.js 文章資料表
+    CREATE TABLE `post_nodejs` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主鍵',
+      `user_profile_id` int(11) NOT NULL COMMENT '發文者的使用者資料表主鍵',
+      `reply_post_id` int(11) DEFAULT NULL COMMENT '回覆目標文章的主鍵',
+      `topic` varchar(30) NOT NULL COMMENT '主題',
+      `content` varchar(20000) NOT NULL COMMENT '內文',
+      `created_at` datetime NOT NULL COMMENT '建立時間',
+      `updated_at` datetime DEFAULT NULL COMMENT '修改時間',
+      `deleted_at` datetime DEFAULT NULL COMMENT '刪除時間',
+      PRIMARY KEY (`id`)
+    ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Node.js 文章資料表'
+
+### 使用者資料表
+    CREATE TABLE `user_profile` (
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主鍵',
+      `username` varchar(20) NOT NULL COMMENT '使用者名稱',
+      `email` varchar(50) NOT NULL COMMENT '電子信箱',
+      `password` varchar(100) NOT NULL COMMENT '密碼',
+      `role` varchar(10) NOT NULL COMMENT '角色：admin 系統管理者、user 一般使用者。',
+      `is_disabled` tinyint(1) DEFAULT '0' COMMENT '0: 啟用。1：停用。',
+      `created_at` datetime NOT NULL COMMENT '建立時間',
+      `updated_at` datetime DEFAULT NULL COMMENT '修改時間',
+      PRIMARY KEY (`id`)
+    ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='使用者資料表'
+
+View 說明
+===
+### Golang 各主題的最新回覆文章 id 和回覆數的 View
+    create or replace view view_post_golang_last_reply
+    as 
+    select
+        max(post_golang.id) as id,
+        count(*) as reply_count
+    from
+        post_golang
+    where
+        post_golang.reply_post_id is not null
+    group by
+        post_golang.reply_post_id
+    
+### Node.js 各主題的最新回覆文章 id 和回覆數的 View
+    create or replace
+    view view_post_nodejs_last_reply
+    as
+    select
+        max(post_nodejs.id) as id,
+        count(*) as reply_count
+    from
+        post_nodejs
+    where
+        post_nodejs.reply_post_id is not null
+    group by
+        post_nodejs.reply_post_id
+
+### Golang 各主題的最新回覆文章的時間、作者和回覆數的 View
+    create or replace view view_post_golang_each_topic_last_reply
+    as
+    select
+        p.id as id,
+        p.user_profile_id as user_profile_id,
+        p.reply_post_id as reply_post_id,
+        p.topic as topic,
+        p.content as content,
+        p.created_at as created_at,
+        p.updated_at as updated_at,
+        u.username as username,
+        u.email as email,
+        u.role as role,
+        last_reply.reply_count as reply_count
+    from
+        post_golang p
+    join user_profile u 
+      on p.user_profile_id = u.id
+    join view_post_golang_last_reply last_reply
+      on p.id = last_reply.id
+    order by
+        p.reply_post_id desc
+    
+### Node.js 各主題的最新回覆文章的時間、作者和回覆數的 View
+    create or replace view view_post_nodejs_each_topic_last_reply
+    as
+    select
+        p.id as id,
+        p.user_profile_id as user_profile_id,
+        p.reply_post_id as reply_post_id,
+        p.topic as topic,
+        p.content as content,
+        p.created_at as created_at,
+        p.updated_at as updated_at,
+        u.username as username,
+        u.email as email,
+        u.role as role,
+        last_reply.reply_count as reply_count
+    from
+        post_nodejs p
+    join user_profile u
+      on p.user_profile_id = u.id
+    join view_post_nodejs_last_reply last_reply
+      on p.id = last_reply.id
+    order by
+        p.reply_post_id desc
