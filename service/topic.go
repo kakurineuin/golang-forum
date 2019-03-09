@@ -38,7 +38,8 @@ func (s TopicService) FindTopicsStatistics() (golangStatistics, nodeJSStatistics
 }
 
 // FindTopics 查詢主題列表。
-func (s TopicService) FindTopics(category, searchTopic string, offset, limit int) (topics []model.Topic, totalCount int, err error) {
+func (s TopicService) FindTopics(category, searchTopic string, offset, limit int) (
+	topics []model.Topic, totalCount int, err error) {
 	topics = make([]model.Topic, 0)
 	searchTopic = "%" + strings.TrimSpace(searchTopic) + "%"
 
@@ -77,7 +78,8 @@ func (s TopicService) CreatePost(category string, post *model.Post) (err error) 
 }
 
 // FindTopic 查詢某個主題的討論文章。
-func (s TopicService) FindTopic(category string, id, offset, limit int) (findPostsResults []model.FindPostsResult, totalCount int, err error) {
+func (s TopicService) FindTopic(category string, id, offset, limit int) (
+	findPostsResults []model.FindPostsResult, totalCount int, err error) {
 	table, err := getTable(category)
 
 	if err != nil {
@@ -106,7 +108,8 @@ func (s TopicService) FindTopic(category string, id, offset, limit int) (findPos
 }
 
 // UpdatePost 修改文章。
-func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userId int) (post model.Post, err error) {
+func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.PostOnUpdate, userId int) (
+	post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
@@ -145,7 +148,8 @@ func (s TopicService) UpdatePost(category string, id int, postOnUpdate model.Pos
 }
 
 // DeletePost 刪除文章，不是真的刪除，而是修改文章內容和刪除時間欄位。
-func (s TopicService) DeletePost(category string, id, userId int) (post model.Post, err error) {
+func (s TopicService) DeletePost(category string, id, userId int) (
+	post model.Post, err error) {
 
 	// 查詢原本文章。
 	err = s.DAO.DB.Table("post_"+category).First(&post, id).Error
