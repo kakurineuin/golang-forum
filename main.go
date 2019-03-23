@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	var dao *DAO
+	var dao *database.DAO
 	env := os.Getenv("APP_ENV")
 
 	if env == "production" {
