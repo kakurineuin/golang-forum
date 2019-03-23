@@ -1,8 +1,0 @@
-[database]
-user = "b0b034f4d3c1b6"
-password = "f5f18b52"
-host = "us-cdbr-iron-east-03.cleardb.net"
-dbname = "heroku_fc73b85c74719ca"
-
-[jwt]
-secret = "die_meere"

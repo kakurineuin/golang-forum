@@ -19,7 +19,7 @@ func main() {
 	env := os.Getenv("APP_ENV")
 
 	if env == "production" {
-		config.Init("./config", "production")
+		config.InitByEnv()
 	} else {
 		config.Init("./config", "development")
 	}
