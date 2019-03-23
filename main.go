@@ -73,7 +73,7 @@ func main() {
 	if env == "production" {
 		jwtSecret = os.Getenv("JWT_SECRET")
 	} else {
-		jwtSecret := config.Viper.GetString("jwt.secret")
+		jwtSecret = config.Viper.GetString("jwt.secret")
 	}
 
 	apiGroup := e.Group("/api")
