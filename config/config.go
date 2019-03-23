@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/spf13/viper"
 )
 
@@ -19,11 +17,4 @@ func Init(configPath, configName string) {
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s", err))
 	}
-}
-
-// InitByEnv 從環境變數初始化設定檔。
-func InitByEnv() {
-	Viper = *viper.New()
-	Viper.AutomaticEnv()
-	Viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }

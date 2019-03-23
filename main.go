@@ -16,20 +16,26 @@ import (
 )
 
 func main() {
+	var dao *DAO
 	env := os.Getenv("APP_ENV")
 
 	if env == "production" {
-		config.InitByEnv()
+		config.Init("./config", "production")
+		dao = database.InitDAO(
+			os.Getenv("DATABASE_USER"),
+			os.Getenv("DATABASE_PASSWORD"),
+			os.Getenv("DATABASE_HOST"),
+			os.Getenv("DATABASE_NAME"),
+		)
 	} else {
 		config.Init("./config", "development")
+		dao = database.InitDAO(
+			config.Viper.GetString("database.user"),
+			config.Viper.GetString("database.password"),
+			config.Viper.GetString("database.host"),
+			config.Viper.GetString("database.dbname"),
+		)
 	}
-
-	dao := database.InitDAO(
-		config.Viper.GetString("database.user"),
-		config.Viper.GetString("database.password"),
-		config.Viper.GetString("database.host"),
-		config.Viper.GetString("database.dbname"),
-	)
 
 	e := echo.New()
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
@@ -62,7 +68,14 @@ func main() {
 		HTML5:  true,
 	}))
 
-	jwtSecret := config.Viper.GetString("jwt.secret")
+	var jwtSecret string
+
+	if env == "production" {
+		jwtSecret = os.Getenv("JWT_SECRET")
+	} else {
+		jwtSecret := config.Viper.GetString("jwt.secret")
+	}
+
 	apiGroup := e.Group("/api")
 
 	// Auth route
